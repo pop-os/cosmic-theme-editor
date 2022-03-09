@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 use components::App;
 use gtk4::{gdk::Display, prelude::*, Application, CssProvider, StyleContext};
 

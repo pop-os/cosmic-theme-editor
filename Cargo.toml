@@ -1,0 +1,16 @@
+[package]
+name = "cosmic-theme-editor"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+palette = "0.6"
+anyhow = "1.0"
+gtk4 = { git = "https://github.com/gtk-rs/gtk4-rs"}
+relm4 = { git = "https://github.com/AaronErhardt/Relm4", branch = "new-approach" }
+relm4-macros = { git = "https://github.com/AaronErhardt/Relm4", branch = "new-approach" }
+once_cell = "1.9.0"
+tokio = { version = "1.17.0", features = ["full"] }
+cascade = "1.0.0"

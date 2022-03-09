@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 use cascade::cascade;
 use gtk4::{
     gio, glib, prelude::*, subclass::prelude::*, Box, Button, ColorButton, ColorChooser, Entry,

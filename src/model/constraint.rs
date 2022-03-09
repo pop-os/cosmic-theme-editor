@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
 #[derive(Copy, Clone, Debug)]
 pub struct ThemeConstraints {
     pub elevated_contrast_ratio: f32,
