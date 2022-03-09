@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-use gtk4::{gio, glib, subclass::prelude::*, Entry};
+use gtk4::{gio, glib, subclass::prelude::*, Button, ColorButton, Entry};
 use once_cell::sync::OnceCell;
 use std::cell::Cell;
 
@@ -10,6 +10,13 @@ use crate::model::{Selection, Theme, ThemeConstraints};
 #[derive(Default)]
 pub struct ThemeEditor {
     pub name: OnceCell<Entry>,
+    pub save: OnceCell<Button>,
+    pub background_color_button: OnceCell<ColorButton>,
+    pub primary_color_button: OnceCell<ColorButton>,
+    pub secondary_color_button: OnceCell<ColorButton>,
+    pub accent_color_button: OnceCell<ColorButton>,
+    pub accent_nav_handle_text_color_button: OnceCell<ColorButton>,
+    pub destructive_color_button: OnceCell<ColorButton>,
     pub constraints: Cell<ThemeConstraints>,
     pub selection: Cell<Selection>,
     pub theme: Cell<Theme>,
