@@ -2,7 +2,7 @@
 
 use gtk4::{gio, glib, subclass::prelude::*, Button, ColorButton, Entry};
 use once_cell::sync::OnceCell;
-use std::cell::Cell;
+use std::{cell::Cell, rc::Rc};
 
 use crate::model::{Selection, Theme, ThemeConstraints};
 
@@ -11,15 +11,16 @@ use crate::model::{Selection, Theme, ThemeConstraints};
 pub struct ThemeEditor {
     pub name: OnceCell<Entry>,
     pub save: OnceCell<Button>,
+    pub preview: OnceCell<Button>,
     pub background_color_button: OnceCell<ColorButton>,
     pub primary_color_button: OnceCell<ColorButton>,
     pub secondary_color_button: OnceCell<ColorButton>,
     pub accent_color_button: OnceCell<ColorButton>,
     pub accent_nav_handle_text_color_button: OnceCell<ColorButton>,
     pub destructive_color_button: OnceCell<ColorButton>,
-    pub constraints: Cell<ThemeConstraints>,
-    pub selection: Cell<Selection>,
-    pub theme: Cell<Theme>,
+    pub constraints: Rc<Cell<ThemeConstraints>>,
+    pub selection: Rc<Cell<Selection>>,
+    pub theme: Rc<Cell<Theme>>,
 }
 
 // The central trait for subclassing a GObject

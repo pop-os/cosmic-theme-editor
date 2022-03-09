@@ -75,6 +75,7 @@ impl ThemeEditor {
 
                     append: background_color_button = &ColorButton {
                         set_title: "Background Color",
+                        set_use_alpha: false,
                     },
 
                     append: background_color_label = &Label {
@@ -92,6 +93,7 @@ impl ThemeEditor {
 
                     append: primary_color_button = &ColorButton {
                         set_title: "Primary Color",
+                        set_use_alpha: false,
                     },
 
                     append: primary_color_label = &Label {
@@ -109,19 +111,12 @@ impl ThemeEditor {
 
                     append: secondary_color_button = &ColorButton {
                         set_title: "Primary Color",
-                        set_margin_top: 4,
-                        set_margin_bottom: 4,
-                        set_margin_start: 4,
-                        set_margin_end: 4,
-                   },
+                        set_use_alpha: false,
+                  },
 
                     append: secondary_color_label = &Label {
                         set_text: "Secondary Color",
-                        set_margin_top: 4,
-                        set_margin_bottom: 4,
-                        set_margin_start: 4,
-                        set_margin_end: 4,
-                   }
+                  }
                 },
 
                 append: accent_color_box = &Box {
@@ -134,19 +129,12 @@ impl ThemeEditor {
 
                     append: accent_color_button = &ColorButton {
                         set_title: "Accent Color",
-                        set_margin_top: 4,
-                        set_margin_bottom: 4,
-                        set_margin_start: 4,
-                        set_margin_end: 4,
-                    },
+                        set_use_alpha: false,
+                   },
 
                     append: accent_color_label = &Label {
                         set_text: "Accent Color",
-                        set_margin_top: 4,
-                        set_margin_bottom: 4,
-                        set_margin_start: 4,
-                        set_margin_end: 4,
-                    }
+                   }
                 },
 
                 append: accent_nav_handle_color_box = &Box {
@@ -159,20 +147,14 @@ impl ThemeEditor {
 
                     append: accent_nav_handle_color_button = &ColorButton {
                         set_title: "Accent Nav Handle Text Color",
-                        set_margin_top: 4,
-                        set_margin_bottom: 4,
-                        set_margin_start: 4,
-                        set_margin_end: 4,
+                        set_use_alpha: false,
                     },
 
                     append: accent_nav_handle_color_label = &Label {
                         set_text: "Accent Nav Handle Text Color",
-                        set_margin_top: 4,
-                        set_margin_bottom: 4,
-                        set_margin_start: 4,
-                        set_margin_end: 4,
                     }
                 },
+
                 append: destructive_color_box = &Box {
                     set_orientation: Orientation::Horizontal,
                     set_spacing: 4,
@@ -183,35 +165,51 @@ impl ThemeEditor {
 
                     append: destructive_color_button = &ColorButton {
                         set_title: "Destructive Color",
-                        set_margin_top: 4,
-                        set_margin_bottom: 4,
-                        set_margin_start: 4,
-                        set_margin_end: 4,
                     },
 
                     append: destructive_color_label = &Label {
                         set_text: "Destructive Color",
-                        set_margin_top: 4,
-                        set_margin_bottom: 4,
-                        set_margin_start: 4,
-                        set_margin_end: 4,
                     }
                 },
 
-                append: save_button = &Button {
+                append: control_button_box = &Box {
+                    set_orientation: Orientation::Horizontal,
+                    set_spacing: 4,
                     set_margin_top: 4,
                     set_margin_bottom: 4,
                     set_margin_start: 4,
                     set_margin_end: 4,
 
-                    set_child = Some(&Label) {
-                        set_text: "Save",
+                    append: save_button = &Button {
                         set_margin_top: 4,
                         set_margin_bottom: 4,
                         set_margin_start: 4,
                         set_margin_end: 4,
-                    }
-               },
+
+                        set_child = Some(&Label) {
+                            set_text: "Save",
+                            set_margin_top: 4,
+                            set_margin_bottom: 4,
+                            set_margin_start: 4,
+                            set_margin_end: 4,
+                        }
+                    },
+
+                    append: preview_button = &Button {
+                        set_margin_top: 4,
+                        set_margin_bottom: 4,
+                        set_margin_start: 4,
+                        set_margin_end: 4,
+
+                        set_child = Some(&Label) {
+                            set_text: "Preview",
+                            set_margin_top: 4,
+                            set_margin_bottom: 4,
+                            set_margin_start: 4,
+                            set_margin_end: 4,
+                        }
+                    },
+                },
 
                 append: separator = &Separator {
                     set_orientation: Orientation::Horizontal,
@@ -226,10 +224,12 @@ impl ThemeEditor {
 
         self_.append(&inner);
 
-        // TODO set up handlers
         // set widget state
         imp.name.set(name).unwrap();
         imp.save.set(save_button).unwrap();
+        imp.preview.set(preview_button).unwrap();
+
+        // color buttons
         imp.background_color_button
             .set(background_color_button)
             .unwrap();
@@ -246,11 +246,76 @@ impl ThemeEditor {
             .unwrap();
 
         self_.connect_color_buttons();
+        self_.connect_control_buttons();
 
         self_
     }
 
     fn connect_color_buttons(&self) {
         let imp = imp::ThemeEditor::from_instance(&self);
+        let selection = &imp.selection;
+
+        imp.background_color_button
+            .get()
+            .unwrap()
+            .connect_color_set(glib::clone!(@weak selection => move |self_| {
+                selection.get().set_background(self_.rgba());
+            }));
+
+        imp.primary_color_button.get().unwrap().connect_color_set(
+            glib::clone!(@weak selection => move |self_| {
+                selection.get().set_primary_container(self_.rgba());
+            }),
+        );
+
+        imp.secondary_color_button.get().unwrap().connect_color_set(
+            glib::clone!(@weak selection => move |self_| {
+                selection.get().set_secondary_container(self_.rgba());
+            }),
+        );
+
+        imp.accent_color_button.get().unwrap().connect_color_set(
+            glib::clone!(@weak selection => move |self_| {
+                selection.get().set_accent_color(self_.rgba());
+            }),
+        );
+
+        imp.accent_nav_handle_text_color_button
+            .get()
+            .unwrap()
+            .connect_color_set(glib::clone!(@weak selection => move |self_| {
+                selection.get().set_accent_nav_handle_text_color(self_.rgba());
+            }));
+
+        imp.destructive_color_button
+            .get()
+            .unwrap()
+            .connect_color_set(glib::clone!(@weak selection => move |self_| {
+                selection.get().set_destructive(self_.rgba());
+            }));
+    }
+
+    fn connect_control_buttons(&self) {
+        let imp = imp::ThemeEditor::from_instance(&self);
+        let selection = &imp.selection;
+        let theme = &imp.theme;
+        let constraints = &imp.constraints;
+
+        imp.save.get().unwrap().connect_activate(
+            glib::clone!(@weak selection, @weak theme, @weak constraints => move |_| {
+                // TODO convert theme ron & css file
+                // TODO convert constraints & selection to ron
+                todo!();
+            }),
+        );
+
+        imp.save.get().unwrap().connect_activate(
+            glib::clone!(@weak selection, @weak theme, @weak constraints => move |_| {
+                // TODO convert constraints & selection to theme
+                // TODO convert theme to CSS
+                // TODO load css so that the preview displays the proper theme
+                todo!();
+            }),
+        );
     }
 }
