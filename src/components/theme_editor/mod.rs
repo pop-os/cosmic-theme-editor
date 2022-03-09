@@ -92,12 +92,12 @@ impl ThemeEditor {
                     set_margin_end: 4,
 
                     append: primary_color_button = &ColorButton {
-                        set_title: "Primary Color",
+                        set_title: "Primary Container Color",
                         set_use_alpha: false,
                     },
 
                     append: primary_color_label = &Label {
-                        set_text: "Primary Color",
+                        set_text: "Primary Container Color",
                     }
                 },
 
@@ -110,12 +110,12 @@ impl ThemeEditor {
                     set_margin_end: 4,
 
                     append: secondary_color_button = &ColorButton {
-                        set_title: "Primary Color",
+                        set_title: "Secondary Container Color",
                         set_use_alpha: false,
                   },
 
                     append: secondary_color_label = &Label {
-                        set_text: "Secondary Color",
+                        set_text: "Secondary Container Color",
                   }
                 },
 
@@ -135,6 +135,24 @@ impl ThemeEditor {
                     append: accent_color_label = &Label {
                         set_text: "Accent Color",
                    }
+                },
+
+                append: accent_text_color_box = &Box {
+                    set_orientation: Orientation::Horizontal,
+                    set_spacing: 4,
+                    set_margin_top: 4,
+                    set_margin_bottom: 4,
+                    set_margin_start: 4,
+                    set_margin_end: 4,
+
+                    append: accent_text_color_button = &ColorButton {
+                        set_title: "Accent Text Color",
+                        set_use_alpha: false,
+                    },
+
+                    append: accent_text_color_label = &Label {
+                        set_text: "Accent Text Color",
+                    }
                 },
 
                 append: accent_nav_handle_color_box = &Box {
@@ -237,6 +255,9 @@ impl ThemeEditor {
         imp.secondary_color_button
             .set(secondary_color_button)
             .unwrap();
+        imp.accent_text_color_button
+            .set(accent_text_color_button)
+            .unwrap();
         imp.accent_color_button.set(accent_color_button).unwrap();
         imp.accent_nav_handle_text_color_button
             .set(accent_nav_handle_color_button)
@@ -273,6 +294,13 @@ impl ThemeEditor {
                 selection.get().set_secondary_container(self_.rgba());
             }),
         );
+
+        imp.accent_text_color_button
+            .get()
+            .unwrap()
+            .connect_color_set(glib::clone!(@weak selection => move |self_| {
+                selection.get().set_accent_text_color(self_.rgba());
+            }));
 
         imp.accent_color_button.get().unwrap().connect_color_set(
             glib::clone!(@weak selection => move |self_| {

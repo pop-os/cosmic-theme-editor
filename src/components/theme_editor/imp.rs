@@ -16,6 +16,7 @@ pub struct ThemeEditor {
     pub primary_color_button: OnceCell<ColorButton>,
     pub secondary_color_button: OnceCell<ColorButton>,
     pub accent_color_button: OnceCell<ColorButton>,
+    pub accent_text_color_button: OnceCell<ColorButton>,
     pub accent_nav_handle_text_color_button: OnceCell<ColorButton>,
     pub destructive_color_button: OnceCell<ColorButton>,
     pub constraints: Rc<Cell<ThemeConstraints>>,
