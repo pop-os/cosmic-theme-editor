@@ -25,8 +25,8 @@ impl From<RGBA> for SRGBA {
     fn from(rgba: RGBA) -> Self {
         Self(Srgba::new(
             rgba.red(),
-            rgba.blue(),
             rgba.green(),
+            rgba.blue(),
             rgba.alpha(),
         ))
     }

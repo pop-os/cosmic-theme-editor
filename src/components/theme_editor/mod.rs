@@ -4,7 +4,7 @@ use cascade::cascade;
 use gtk4::{
     builders::ButtonBuilder, gdk::Display, gio, glib, prelude::*, subclass::prelude::*, Box,
     Button, ColorButton, CssProvider, DialogFlags, Entry, Label, MessageDialog, MessageType,
-    Orientation, Separator, StyleContext, Window,
+    Orientation, ScrolledWindow, Separator, StyleContext, Window,
 };
 use relm4_macros::view;
 use std::rc::Rc;
@@ -60,10 +60,12 @@ impl ThemeEditor {
                     append: background_color_button = &ColorButton {
                         set_title: "Background Color",
                         set_use_alpha: false,
+                        add_css_class: "background_component",
                     },
 
                     append: background_color_label = &Label {
                         set_text: "Background Color",
+                        add_css_class: "background_text",
                     }
                 },
 
@@ -78,10 +80,12 @@ impl ThemeEditor {
                     append: primary_color_button = &ColorButton {
                         set_title: "Primary Container Color",
                         set_use_alpha: false,
+                        add_css_class: "background_component",
                     },
 
                     append: primary_color_label = &Label {
                         set_text: "Primary Container Color",
+                        add_css_class: "background_text",
                     }
                 },
 
@@ -96,10 +100,12 @@ impl ThemeEditor {
                     append: secondary_color_button = &ColorButton {
                         set_title: "Secondary Container Color",
                         set_use_alpha: false,
+                        add_css_class: "background_component",
                   },
 
                     append: secondary_color_label = &Label {
                         set_text: "Secondary Container Color",
+                        add_css_class: "background_text",
                   }
                 },
 
@@ -114,10 +120,12 @@ impl ThemeEditor {
                     append: accent_color_button = &ColorButton {
                         set_title: "Accent Color",
                         set_use_alpha: false,
+                        add_css_class: "background_component",
                    },
 
                     append: accent_color_label = &Label {
                         set_text: "Accent Color",
+                        add_css_class: "background_text",
                    }
                 },
 
@@ -132,10 +140,12 @@ impl ThemeEditor {
                     append: accent_text_color_button = &ColorButton {
                         set_title: "Accent Text Color",
                         set_use_alpha: false,
+                        add_css_class: "background_component",
                     },
 
                     append: accent_text_color_label = &Label {
                         set_text: "Accent Text Color",
+                        add_css_class: "background_text",
                     }
                 },
 
@@ -150,10 +160,12 @@ impl ThemeEditor {
                     append: accent_nav_handle_color_button = &ColorButton {
                         set_title: "Accent Nav Handle Text Color",
                         set_use_alpha: false,
+                        add_css_class: "background_component",
                     },
 
                     append: accent_nav_handle_color_label = &Label {
                         set_text: "Accent Nav Handle Text Color",
+                        add_css_class: "background_text",
                     }
                 },
 
@@ -167,10 +179,12 @@ impl ThemeEditor {
 
                     append: destructive_color_button = &ColorButton {
                         set_title: "Destructive Color",
+                        add_css_class: "background_component",
                     },
 
                     append: destructive_color_label = &Label {
                         set_text: "Destructive Color",
+                        add_css_class: "background_text",
                     }
                 },
 
@@ -187,6 +201,7 @@ impl ThemeEditor {
                         set_margin_bottom: 4,
                         set_margin_start: 4,
                         set_margin_end: 4,
+                        add_css_class: "background_component",
 
                         set_child = Some(&Label) {
                             set_text: "Save",
@@ -194,6 +209,7 @@ impl ThemeEditor {
                             set_margin_bottom: 4,
                             set_margin_start: 4,
                             set_margin_end: 4,
+                            add_css_class: "background_component_text",
                         }
                     },
 
@@ -202,6 +218,7 @@ impl ThemeEditor {
                         set_margin_bottom: 4,
                         set_margin_start: 4,
                         set_margin_end: 4,
+                        add_css_class: "background_component",
 
                         set_child = Some(&Label) {
                             set_text: "Preview",
@@ -209,6 +226,7 @@ impl ThemeEditor {
                             set_margin_bottom: 4,
                             set_margin_start: 4,
                             set_margin_end: 4,
+                            add_css_class: "background_component_text",
                         }
                     },
                 },
@@ -219,6 +237,7 @@ impl ThemeEditor {
                     set_margin_bottom: 4,
                     set_margin_start: 4,
                     set_margin_end: 4,
+                    add_css_class: "background_component_divider",
                 },
                 // TODO preview
 
@@ -239,7 +258,13 @@ impl ThemeEditor {
             }
         };
 
-        self_.append(&inner);
+        let scroll_window = ScrolledWindow::builder()
+            .hexpand(true)
+            .vexpand(true)
+            .child(&inner)
+            .build();
+
+        self_.append(&scroll_window);
 
         // set widget state
         imp.name.set(name).unwrap();

@@ -84,39 +84,47 @@ impl Theme {
         format!(
             r#"/* WIP CSS preview generation */
 .background {{
-background-color: {background}
+background-color: {background};
 }}
 
 .background-component {{
-background-color: {background_component}
+background-color: {background_component};
 }}
 
 .background-componenet-divider {{
-background-color: {background_component_divider}
+background-color: {background_component_divider};
+}}
+
+.background-text {{
+color: {background_text};
+}}
+
+.background-component-text {{
+color: {background_component_text};
 }}
 
 .primary-container {{
-background-color: {primary_container}
+background-color: {primary_container};
 }}
 
 .primary-component {{
-background-color: {primary_component}
+background-color: {primary_component};
 }}
 
 .primary-componenet-divider {{
-background-color: {primary_component_divider}
+background-color: {primary_component_divider};
 }}
 
 .secondary-container {{
-background-color: {secondary_container}
+background-color: {secondary_container};
 }}
 
 .secondary-component {{
-background-color: {secondary_component}
+background-color: {secondary_component};
 }}
 
 .secondary-componenet-divider {{
-background-color: {secondary_component_divider}
+background-color: {secondary_component_divider};
 }}
 "#
         )

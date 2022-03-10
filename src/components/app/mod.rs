@@ -24,7 +24,7 @@ impl App {
             ..set_width_request(500);
             ..set_height_request(500);
             ..set_title(Some(crate::APP_TITLE));
-            ..add_css_class("theme_editor_window");
+            ..add_css_class("background");
         };
 
         let theme_editor = ThemeEditor::new();
