@@ -2,48 +2,115 @@
 
 use super::{Selection, ThemeConstraints};
 use crate::color_picker::{ColorPicker, Exact};
-use palette::rgb::Srgb;
+use hex::encode;
+use palette::{rgb::Srgba, Pixel};
 
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 pub struct Theme {
     // selected colors
-    background: Srgb,
-    primary_container: Srgb,
-    secondary_container: Srgb,
-    accent: Srgb,
-    accent_text: Srgb,
-    accent_nav_handle_text: Srgb,
-    destructive: Srgb,
+    background: Srgba,
+    primary_container: Srgba,
+    secondary_container: Srgba,
+    accent: Srgba,
+    accent_text: Srgba,
+    accent_nav_handle_text: Srgba,
+    destructive: Srgba,
 
     // derived surface colors
-    window_header_background: Srgb,
-    background_component: Srgb,
-    background_component_divider: Srgb,
-    primary_component: Srgb,
-    primary_component_divider: Srgb,
-    secondary_component: Srgb,
-    secondary_component_divider: Srgb,
+    window_header_background: Srgba,
+    background_component: Srgba,
+    background_component_divider: Srgba,
+    primary_component: Srgba,
+    primary_component_divider: Srgba,
+    secondary_component: Srgba,
+    secondary_component_divider: Srgba,
 
     // derived text colors
-    background_text: Srgb,
-    background_text_opacity80: Srgb,
-    primary_container_text: Srgb,
-    primary_container_text_opacity80: Srgb,
-    secondary_container_text: Srgb,
-    secondary_container_text_opacity80: Srgb,
-    background_component_text: Srgb,
-    background_component_text_opacity80: Srgb,
-    primary_container_component_text: Srgb,
-    primary_container_component_text_opacity80: Srgb,
-    secondary_container_component_text: Srgb,
-    secondary_container_component_text_opacity80: Srgb,
-    text_button_text: Srgb,
-    suggested_button_text: Srgb,
-    destructive_button_text: Srgb,
+    background_text: Srgba,
+    background_text_opacity80: Srgba,
+    primary_container_text: Srgba,
+    primary_container_text_opacity80: Srgba,
+    secondary_container_text: Srgba,
+    secondary_container_text_opacity80: Srgba,
+    background_component_text: Srgba,
+    background_component_text_opacity80: Srgba,
+    primary_container_component_text: Srgba,
+    primary_container_component_text_opacity80: Srgba,
+    secondary_container_component_text: Srgba,
+    secondary_container_component_text_opacity80: Srgba,
+    text_button_text: Srgba,
+    suggested_button_text: Srgba,
+    destructive_button_text: Srgba,
     // TODO
     // derived from button state
     // derived from selectable state
     // derived from draggable state
+}
+
+impl Theme {
+    pub fn as_css(&self) -> String {
+        let Self {
+            background,
+            primary_container,
+            secondary_container,
+            accent,
+            accent_text,
+            accent_nav_handle_text,
+            destructive,
+            window_header_background,
+            background_component,
+            background_component_divider,
+            primary_component,
+            primary_component_divider,
+            secondary_component,
+            secondary_component_divider,
+            background_text,
+            background_text_opacity80,
+            primary_container_text,
+            primary_container_text_opacity80,
+            secondary_container_text,
+            secondary_container_text_opacity80,
+            background_component_text,
+            background_component_text_opacity80,
+            primary_container_component_text,
+            primary_container_component_text_opacity80,
+            secondary_container_component_text,
+            secondary_container_component_text_opacity80,
+            text_button_text,
+            suggested_button_text,
+            destructive_button_text,
+        } = self;
+        let background_hex = encode::<[u8; 4]>(Srgba::into_raw(background.into_format()));
+        let background_component_hex =
+            encode::<[u8; 4]>(Srgba::into_raw(background_component.into_format()));
+
+        let primary_container_hex =
+            encode::<[u8; 4]>(Srgba::into_raw(primary_container.into_format()));
+
+        let secondary_container_hex =
+            encode::<[u8; 4]>(Srgba::into_raw(secondary_container.into_format()));
+
+        format!(
+            r#"/* WIP CSS preview generation */
+.background {{
+background-color: #{background_hex}
+}}
+
+.background-component {{
+background-color: #{background_component_hex}
+}}
+
+
+.primary-container {{
+background-color: #{primary_container_hex}
+}}
+
+.secondary-container {{
+background-color: #{secondary_container_hex}
+}}
+"#
+        )
+    }
 }
 
 impl TryFrom<(Selection, ThemeConstraints)> for Theme {

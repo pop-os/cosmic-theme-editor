@@ -2,8 +2,9 @@
 use crate::model::Theme;
 use cascade::cascade;
 use gtk4::{
-    builders::ButtonBuilder, gio, glib, prelude::*, subclass::prelude::*, Box, Button, ColorButton,
-    DialogFlags, Entry, Label, MessageDialog, MessageType, Orientation, Separator, Window,
+    builders::ButtonBuilder, gdk::Display, gio, glib, prelude::*, subclass::prelude::*, Box,
+    Button, ColorButton, CssProvider, DialogFlags, Entry, Label, MessageDialog, MessageType,
+    Orientation, Separator, StyleContext, Window,
 };
 use relm4_macros::view;
 use std::rc::Rc;
@@ -218,8 +219,23 @@ impl ThemeEditor {
                     set_margin_bottom: 4,
                     set_margin_start: 4,
                     set_margin_end: 4,
-                }
+                },
                 // TODO preview
+
+                append = &Box {
+                    set_hexpand: true,
+                    set_height_request: 100,
+                    add_css_class: "background",
+
+                    append = &Label {
+                        set_hexpand: true,
+                        set_height_request: 50,
+                        add_css_class: "background-component",
+                        set_text: "Background Component"
+                    }
+
+                },
+
             }
         };
 
@@ -259,22 +275,30 @@ impl ThemeEditor {
         let imp = imp::ThemeEditor::from_instance(&self);
         let selection = &imp.selection;
 
+        //TODO verify that gdk RGBA is Srgb
+
         imp.background_color_button
             .get()
             .unwrap()
             .connect_color_set(glib::clone!(@weak selection => move |self_| {
-                selection.get().set_background(self_.rgba());
+                let mut c = selection.get();
+                c.set_background(self_.rgba());
+                selection.set(c);
             }));
 
         imp.primary_color_button.get().unwrap().connect_color_set(
             glib::clone!(@weak selection => move |self_| {
-                selection.get().set_primary_container(self_.rgba());
+                let mut c = selection.get();
+                c.set_primary_container(self_.rgba());
+                selection.set(c);
             }),
         );
 
         imp.secondary_color_button.get().unwrap().connect_color_set(
             glib::clone!(@weak selection => move |self_| {
-                selection.get().set_secondary_container(self_.rgba());
+                let mut c = selection.get();
+                c.set_secondary_container(self_.rgba());
+                selection.set(c);
             }),
         );
 
@@ -282,12 +306,16 @@ impl ThemeEditor {
             .get()
             .unwrap()
             .connect_color_set(glib::clone!(@weak selection => move |self_| {
-                selection.get().set_accent_text_color(self_.rgba());
+                let mut c = selection.get();
+                c.set_accent_text_color(self_.rgba());
+                selection.set(c);
             }));
 
         imp.accent_color_button.get().unwrap().connect_color_set(
             glib::clone!(@weak selection => move |self_| {
+                let mut c = selection.get();
                 selection.get().set_accent_color(self_.rgba());
+                selection.set(c);
             }),
         );
 
@@ -329,6 +357,17 @@ impl ThemeEditor {
                 if let Ok(new_theme) =  Theme::try_from((selection.get(), constraints.get())) {
                     dbg!(new_theme);
                     theme.set(new_theme);
+                    let preview_css = theme.get().as_css();
+                    dbg!(&preview_css);
+
+                    let provider = CssProvider::new();
+                    provider.load_from_data(preview_css.as_bytes());
+                    StyleContext::add_provider_for_display(
+                        &Display::default().expect("Error initializing GTK CSS provider."),
+                        &provider,
+                        gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
+                    );
+
                 } else {
                     eprintln!("failed to create new theme...");
                     let window = self_.root().map(|root| {

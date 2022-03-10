@@ -1,7 +1,7 @@
 use super::ColorPicker;
 use anyhow::{bail, Result};
 use float_cmp::approx_eq;
-use palette::{rgb::Srgb, Clamp, IntoColor, Lch, RelativeContrast};
+use palette::{rgb::Srgba, Clamp, IntoColor, Lch, RelativeContrast};
 
 #[derive(Debug, Default)]
 pub struct Exact();
@@ -9,11 +9,11 @@ pub struct Exact();
 impl ColorPicker for Exact {
     fn pick_color(
         &self,
-        color: Srgb,
+        color: Srgba,
         contrast: f32,
         grayscale: bool,
         lighten: bool,
-    ) -> Result<Srgb> {
+    ) -> Result<Srgba> {
         let mut lch_color: Lch = color.into_color();
         dbg!(lch_color);
 

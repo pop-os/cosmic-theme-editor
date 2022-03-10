@@ -1,15 +1,15 @@
 use anyhow::Result;
 pub use exact::*;
-use palette::rgb::Srgb;
+use palette::rgb::Srgba;
 
 mod exact;
 
 pub trait ColorPicker {
     fn pick_color(
         &self,
-        color: Srgb,
+        color: Srgba,
         contrast: f32,
         grayscale: bool,
         lighten: bool,
-    ) -> Result<Srgb>;
+    ) -> Result<Srgba>;
 }
