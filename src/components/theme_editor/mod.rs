@@ -115,29 +115,165 @@ impl ThemeEditor {
 
                 append: separator = &Separator {
                     set_orientation: Orientation::Horizontal,
-                    set_margin_top: 4,
-                    set_margin_bottom: 4,
-                    set_margin_start: 4,
-                    set_margin_end: 4,
-                    add_css_class: "background-component-divider",
+                    set_margin_top: 8,
+                    set_margin_bottom: 8,
+                    set_margin_start: 8,
+                    set_margin_end: 8,
+                    add_css_class: "background-divider",
                 },
-                // TODO preview
 
                 append = &Box {
+                    set_orientation: Orientation::Vertical,
                     set_hexpand: true,
                     set_height_request: 100,
                     add_css_class: "background",
+                    set_margin_top: 8,
+                    set_margin_bottom: 8,
+                    set_margin_start: 8,
+                    set_margin_end: 8,
 
                     append = &Label {
                         set_hexpand: true,
+                        add_css_class: "background-text",
+                        set_margin_top: 8,
+                        set_margin_bottom: 8,
+                        set_margin_start: 8,
+                        set_margin_end: 8,
+                        set_text: "Background"
+                    },
+
+                    append = &Box {
+                        set_orientation: Orientation::Vertical,
+                        set_hexpand: true,
                         set_height_request: 50,
                         add_css_class: "background-component",
-                        add_css_class: "background-component-text",
-                        set_text: "Background Component"
-                    }
+                        set_margin_top: 8,
+                        set_margin_bottom: 8,
+                        set_margin_start: 8,
+                        set_margin_end: 8,
 
+                        append = &Label {
+                            set_hexpand: true,
+                            add_css_class: "background-component-text",
+                            set_margin_top: 8,
+                            set_margin_bottom: 8,
+                            set_margin_start: 8,
+                            set_margin_end: 8,
+                            set_text: "Background Component"
+                        },
+                    },
+
+                    append = &Separator {
+                        set_orientation: Orientation::Horizontal,
+                        add_css_class: "background-divider",
+                        set_margin_top: 8,
+                        set_margin_bottom: 8,
+                        set_margin_start: 8,
+                        set_margin_end: 8,
+                    },
+
+                    append = &Box {
+                        set_orientation: Orientation::Vertical,
+                        set_hexpand: true,
+                        set_height_request: 100,
+                        add_css_class: "primary-container",
+                        set_margin_top: 8,
+                        set_margin_bottom: 8,
+                        set_margin_start: 8,
+                        set_margin_end: 8,
+
+                        append = &Label {
+                            set_hexpand: true,
+                            add_css_class: "primary-container-text",
+                            set_margin_top: 8,
+                            set_margin_bottom: 8,
+                            set_margin_start: 8,
+                            set_margin_end: 8,
+                            set_text: "Primary Container"
+                        },
+
+                        append = &Box {
+                            set_orientation: Orientation::Vertical,
+                            set_hexpand: true,
+                            set_height_request: 50,
+                            add_css_class: "primary-container-component",
+                            set_margin_top: 8,
+                            set_margin_bottom: 8,
+                            set_margin_start: 8,
+                            set_margin_end: 8,
+
+                            append = &Label {
+                                set_hexpand: true,
+                                add_css_class: "primary-container-component-text",
+                                set_margin_top: 8,
+                                set_margin_bottom: 8,
+                                set_margin_start: 8,
+                                set_margin_end: 8,
+                                set_text: "Primary Container Component"
+                            },
+                        },
+
+                        append = &Separator {
+                            set_orientation: Orientation::Horizontal,
+                            add_css_class: "primary-container-divider",
+                            set_margin_top: 8,
+                            set_margin_bottom: 8,
+                            set_margin_start: 8,
+                            set_margin_end: 8,
+                        },
+
+                        append = &Box {
+                            set_orientation: Orientation::Vertical,
+                            set_hexpand: true,
+                            set_height_request: 100,
+                            add_css_class: "secondary-container",
+                            set_margin_top: 8,
+                            set_margin_bottom: 8,
+                            set_margin_start: 8,
+                            set_margin_end: 8,
+
+                            append = &Label {
+                                set_hexpand: true,
+                                add_css_class: "secondary-container-text",
+                                set_margin_top: 8,
+                                set_margin_bottom: 8,
+                                set_margin_start: 8,
+                                set_margin_end: 8,
+                                set_text: "Secondary Container"
+                            },
+
+                            append = &Box {
+                                set_orientation: Orientation::Vertical,
+                                set_hexpand: true,
+                                set_height_request: 50,
+                                add_css_class: "secondary-container-component",
+                                set_margin_top: 8,
+                                set_margin_bottom: 8,
+                                set_margin_start: 8,
+                                set_margin_end: 8,
+
+                                append = &Label {
+                                    set_hexpand: true,
+                                    add_css_class: "secondary-container-component-text",
+                                    set_margin_top: 8,
+                                    set_margin_bottom: 8,
+                                    set_margin_start: 8,
+                                    set_margin_end: 8,
+                                    set_text: "Secondary Container Component"
+                                },
+                            },
+
+                            append = &Separator {
+                                set_orientation: Orientation::Horizontal,
+                                add_css_class: "secondary-container-divider",
+                                set_margin_top: 8,
+                                set_margin_bottom: 8,
+                                set_margin_start: 8,
+                                set_margin_end: 8,
+                            },
+                        },
+                    },
                 },
-
             }
         };
 

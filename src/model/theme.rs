@@ -20,11 +20,12 @@ pub struct Theme {
     // derived surface colors
     window_header_background: SRGBA,
     background_component: SRGBA,
+    background_divider: SRGBA,
     background_component_divider: SRGBA,
-    primary_component: SRGBA,
-    primary_component_divider: SRGBA,
-    secondary_component: SRGBA,
-    secondary_component_divider: SRGBA,
+    primary_container_component: SRGBA,
+    primary_container_component_divider: SRGBA,
+    secondary_container_component: SRGBA,
+    secondary_container_component_divider: SRGBA,
 
     // derived text colors
     background_text: SRGBA,
@@ -52,6 +53,7 @@ impl Theme {
     pub fn as_css(&self) -> String {
         let Self {
             background,
+            background_divider,
             primary_container,
             secondary_container,
             accent,
@@ -61,10 +63,10 @@ impl Theme {
             window_header_background,
             background_component,
             background_component_divider,
-            primary_component,
-            primary_component_divider,
-            secondary_component,
-            secondary_component_divider,
+            primary_container_component,
+            primary_container_component_divider,
+            secondary_container_component,
+            secondary_container_component_divider,
             background_text,
             background_text_opacity80,
             primary_container_text,
@@ -107,24 +109,40 @@ color: {background_component_text};
 background-color: {primary_container};
 }}
 
-.primary-component {{
-background-color: {primary_component};
+.primary-container-component {{
+background-color: {primary_container_component};
 }}
 
-.primary-componenet-divider {{
-background-color: {primary_component_divider};
+.primary-container-componenet-divider {{
+background-color: {primary_container_component_divider};
+}}
+
+.primary-container-text {{
+color: {primary_container_text};
+}}
+
+.primary-container-component-text {{
+color: {primary_container_component_text};
 }}
 
 .secondary-container {{
 background-color: {secondary_container};
 }}
 
-.secondary-component {{
-background-color: {secondary_component};
+.secondary-container-component {{
+background-color: {secondary_container_component};
 }}
 
-.secondary-componenet-divider {{
-background-color: {secondary_component_divider};
+.secondary-container-componenet-divider {{
+background-color: {secondary_container_component_divider};
+}}
+
+.secondary-container-text {{
+color: {secondary_container_text};
+}}
+
+.secondary-container-component-text {{
+color: {secondary_container_component_text};
 }}
 "#
         )
@@ -162,8 +180,14 @@ impl TryFrom<(Selection, ThemeConstraints)> for Theme {
         let window_header_background = background;
         let background_component =
             picker.pick_color(background, elevated_contrast_ratio, false, lighten)?;
-        let background_component_divider = picker.pick_color(
+        let background_divider = picker.pick_color(
             background,
+            divider_contrast_ratio,
+            divider_gray_scale,
+            lighten,
+        )?;
+        let background_component_divider = picker.pick_color(
+            background_component,
             divider_contrast_ratio,
             divider_gray_scale,
             lighten,
@@ -171,55 +195,74 @@ impl TryFrom<(Selection, ThemeConstraints)> for Theme {
         let background_text = picker.pick_color(background, text_contrast_ratio, true, lighten)?;
         let background_component_text =
             picker.pick_color(background_component, text_contrast_ratio, true, lighten)?;
-        let primary_component =
+
+        let primary_container_component =
             picker.pick_color(primary_container, elevated_contrast_ratio, false, lighten)?;
-        let primary_component_divider = picker.pick_color(
+        let primary_container_component_divider = picker.pick_color(
             primary_container,
             divider_contrast_ratio,
             divider_gray_scale,
             lighten,
         )?;
-        let primary_container_component_text =
-            picker.pick_color(primary_component, text_contrast_ratio, true, lighten)?;
+
+        let primary_container_component_text = picker.pick_color(
+            primary_container_component,
+            text_contrast_ratio,
+            true,
+            lighten,
+        )?;
         let primary_container_text =
             picker.pick_color(primary_container, text_contrast_ratio, true, lighten)?;
-        let secondary_component =
+
+        let secondary_container_component =
             picker.pick_color(secondary_container, elevated_contrast_ratio, false, lighten)?;
-        let secondary_component_divider = picker.pick_color(
+        let secondary_container_component_divider = picker.pick_color(
             secondary_container,
             divider_contrast_ratio,
             divider_gray_scale,
             lighten,
         )?;
-        let secondary_container_component_text =
-            picker.pick_color(secondary_component, text_contrast_ratio, true, lighten)?;
+        let secondary_container_component_text = picker.pick_color(
+            secondary_container_component,
+            text_contrast_ratio,
+            true,
+            lighten,
+        )?;
         let secondary_container_text =
             picker.pick_color(secondary_container, text_contrast_ratio, true, lighten)?;
 
-        // TODO allow input of color search heuristic to customize derivation results.
-        // For now, simplest heuristic will be used which maintains hues, and only adjusts lightness to get the exact minumum contrast
+        let destructive_button_text =
+            picker.pick_color(destructive, text_contrast_ratio, true, lighten)?;
 
         Ok(Self {
             background,
+            background_divider,
             background_text,
-            primary_container,
-            primary_container_text,
-            primary_container_component_text,
-            secondary_container,
-            secondary_container_text,
-            secondary_container_component_text,
-            accent,
-            accent_text,
-            accent_nav_handle_text,
-            destructive,
-            window_header_background,
             background_component,
             background_component_divider,
             background_component_text,
-            primary_component,
-            primary_component_divider,
-            secondary_component,
-            secondary_component_divider,
+
+            primary_container,
+            primary_container_text,
+            primary_container_component_text,
+            primary_container_component,
+            primary_container_component_divider,
+
+            secondary_container,
+            secondary_container_text,
+            secondary_container_component,
+            secondary_container_component_divider,
+            secondary_container_component_text,
+
+            accent,
+            accent_text,
+            accent_nav_handle_text,
+
+            destructive,
+            destructive_button_text,
+
+            window_header_background,
+
             ..Default::default()
         })
     }
