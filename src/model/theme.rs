@@ -1,46 +1,47 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 use super::{Selection, ThemeConstraints};
-use crate::color_picker::{ColorPicker, Exact};
-use hex::encode;
-use palette::{rgb::Srgba, Pixel};
+use crate::{
+    color_picker::{ColorPicker, Exact},
+    util::SRGBA,
+};
 
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 pub struct Theme {
     // selected colors
-    background: Srgba,
-    primary_container: Srgba,
-    secondary_container: Srgba,
-    accent: Srgba,
-    accent_text: Srgba,
-    accent_nav_handle_text: Srgba,
-    destructive: Srgba,
+    background: SRGBA,
+    primary_container: SRGBA,
+    secondary_container: SRGBA,
+    accent: SRGBA,
+    accent_text: SRGBA,
+    accent_nav_handle_text: SRGBA,
+    destructive: SRGBA,
 
     // derived surface colors
-    window_header_background: Srgba,
-    background_component: Srgba,
-    background_component_divider: Srgba,
-    primary_component: Srgba,
-    primary_component_divider: Srgba,
-    secondary_component: Srgba,
-    secondary_component_divider: Srgba,
+    window_header_background: SRGBA,
+    background_component: SRGBA,
+    background_component_divider: SRGBA,
+    primary_component: SRGBA,
+    primary_component_divider: SRGBA,
+    secondary_component: SRGBA,
+    secondary_component_divider: SRGBA,
 
     // derived text colors
-    background_text: Srgba,
-    background_text_opacity80: Srgba,
-    primary_container_text: Srgba,
-    primary_container_text_opacity80: Srgba,
-    secondary_container_text: Srgba,
-    secondary_container_text_opacity80: Srgba,
-    background_component_text: Srgba,
-    background_component_text_opacity80: Srgba,
-    primary_container_component_text: Srgba,
-    primary_container_component_text_opacity80: Srgba,
-    secondary_container_component_text: Srgba,
-    secondary_container_component_text_opacity80: Srgba,
-    text_button_text: Srgba,
-    suggested_button_text: Srgba,
-    destructive_button_text: Srgba,
+    background_text: SRGBA,
+    background_text_opacity80: SRGBA,
+    primary_container_text: SRGBA,
+    primary_container_text_opacity80: SRGBA,
+    secondary_container_text: SRGBA,
+    secondary_container_text_opacity80: SRGBA,
+    background_component_text: SRGBA,
+    background_component_text_opacity80: SRGBA,
+    primary_container_component_text: SRGBA,
+    primary_container_component_text_opacity80: SRGBA,
+    secondary_container_component_text: SRGBA,
+    secondary_container_component_text_opacity80: SRGBA,
+    text_button_text: SRGBA,
+    suggested_button_text: SRGBA,
+    destructive_button_text: SRGBA,
     // TODO
     // derived from button state
     // derived from selectable state
@@ -80,33 +81,42 @@ impl Theme {
             suggested_button_text,
             destructive_button_text,
         } = self;
-        let background_hex = encode::<[u8; 4]>(Srgba::into_raw(background.into_format()));
-        let background_component_hex =
-            encode::<[u8; 4]>(Srgba::into_raw(background_component.into_format()));
-
-        let primary_container_hex =
-            encode::<[u8; 4]>(Srgba::into_raw(primary_container.into_format()));
-
-        let secondary_container_hex =
-            encode::<[u8; 4]>(Srgba::into_raw(secondary_container.into_format()));
-
         format!(
             r#"/* WIP CSS preview generation */
 .background {{
-background-color: #{background_hex}
+background-color: {background}
 }}
 
 .background-component {{
-background-color: #{background_component_hex}
+background-color: {background_component}
 }}
 
+.background-componenet-divider {{
+background-color: {background_component_divider}
+}}
 
 .primary-container {{
-background-color: #{primary_container_hex}
+background-color: {primary_container}
+}}
+
+.primary-component {{
+background-color: {primary_component}
+}}
+
+.primary-componenet-divider {{
+background-color: {primary_component_divider}
 }}
 
 .secondary-container {{
-background-color: #{secondary_container_hex}
+background-color: {secondary_container}
+}}
+
+.secondary-component {{
+background-color: {secondary_component}
+}}
+
+.secondary-componenet-divider {{
+background-color: {secondary_component_divider}
 }}
 "#
         )

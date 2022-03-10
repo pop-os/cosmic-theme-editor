@@ -1,4 +1,5 @@
 use super::ColorPicker;
+use crate::util::SRGBA;
 use anyhow::{bail, Result};
 use float_cmp::approx_eq;
 use palette::{rgb::Srgba, Clamp, IntoColor, Lch, RelativeContrast};
@@ -9,12 +10,12 @@ pub struct Exact();
 impl ColorPicker for Exact {
     fn pick_color(
         &self,
-        color: Srgba,
+        color: SRGBA,
         contrast: f32,
         grayscale: bool,
         lighten: bool,
-    ) -> Result<Srgba> {
-        let mut lch_color: Lch = color.into_color();
+    ) -> Result<SRGBA> {
+        let mut lch_color: Lch = (*color).into_color();
         dbg!(lch_color);
 
         // set to grayscale
@@ -60,6 +61,6 @@ impl ColorPicker for Exact {
             bail!("Generated color does not match desired contrast exactly!");
         }
 
-        Ok(lch_color.into_color())
+        Ok(SRGBA(lch_color.into_color()))
     }
 }
