@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
-use crate::model::Theme;
+use crate::{model::Theme, util::SRGBA};
 use cascade::cascade;
 use gtk4::{
-    builders::ButtonBuilder, gdk::Display, gio, glib, prelude::*, subclass::prelude::*, Box,
-    Button, ColorButton, CssProvider, DialogFlags, Entry, Label, MessageDialog, MessageType,
-    Orientation, ScrolledWindow, Separator, StyleContext, Window,
+    gdk::Display, gio, glib, prelude::*, subclass::prelude::*, Box, Button, ColorButton,
+    CssProvider, Entry, Label, MessageDialog, Orientation, ScrolledWindow, Separator, StyleContext,
+    Window,
 };
 use relm4_macros::view;
-use std::rc::Rc;
 mod imp;
 
 glib::wrapper! {
@@ -35,6 +34,20 @@ impl ThemeEditor {
             ..set_vexpand(true);
         };
 
+        let (background_color_box, background_color_button) =
+            Self::get_color_button("Background Color");
+        let (primary_color_box, primary_color_button) =
+            Self::get_color_button("Primary Container Color");
+        let (secondary_color_box, secondary_color_button) =
+            Self::get_color_button("Secondary Container Color");
+        let (accent_color_box, accent_color_button) = Self::get_color_button("Accent Color");
+        let (accent_text_color_box, accent_text_color_button) =
+            Self::get_color_button("Accent Text Color");
+        let (accent_nav_handle_color_box, accent_nav_handle_color_button) =
+            Self::get_color_button("Accent Nav Text Color");
+        let (destructive_color_box, destructive_color_button) =
+            Self::get_color_button("Accent Nav Text Color");
+
         view! {
             inner = Box {
                 set_orientation: Orientation::Vertical,
@@ -49,144 +62,13 @@ impl ThemeEditor {
                     set_width_request: 160,
                 },
 
-                append: background_color_box = &Box {
-                    set_orientation: Orientation::Horizontal,
-                    set_spacing: 4,
-                    set_margin_top: 4,
-                    set_margin_bottom: 4,
-                    set_margin_start: 4,
-                    set_margin_end: 4,
-
-                    append: background_color_button = &ColorButton {
-                        set_title: "Background Color",
-                        set_use_alpha: false,
-                        add_css_class: "background_component",
-                    },
-
-                    append: background_color_label = &Label {
-                        set_text: "Background Color",
-                        add_css_class: "background_text",
-                    }
-                },
-
-                append: primary_color_box = &Box {
-                    set_orientation: Orientation::Horizontal,
-                    set_spacing: 4,
-                    set_margin_top: 4,
-                    set_margin_bottom: 4,
-                    set_margin_start: 4,
-                    set_margin_end: 4,
-
-                    append: primary_color_button = &ColorButton {
-                        set_title: "Primary Container Color",
-                        set_use_alpha: false,
-                        add_css_class: "background_component",
-                    },
-
-                    append: primary_color_label = &Label {
-                        set_text: "Primary Container Color",
-                        add_css_class: "background_text",
-                    }
-                },
-
-                append: secondary_color_box = &Box {
-                    set_orientation: Orientation::Horizontal,
-                    set_spacing: 4,
-                    set_margin_top: 4,
-                    set_margin_bottom: 4,
-                    set_margin_start: 4,
-                    set_margin_end: 4,
-
-                    append: secondary_color_button = &ColorButton {
-                        set_title: "Secondary Container Color",
-                        set_use_alpha: false,
-                        add_css_class: "background_component",
-                  },
-
-                    append: secondary_color_label = &Label {
-                        set_text: "Secondary Container Color",
-                        add_css_class: "background_text",
-                  }
-                },
-
-                append: accent_color_box = &Box {
-                    set_orientation: Orientation::Horizontal,
-                    set_spacing: 4,
-                    set_margin_top: 4,
-                    set_margin_bottom: 4,
-                    set_margin_start: 4,
-                    set_margin_end: 4,
-
-                    append: accent_color_button = &ColorButton {
-                        set_title: "Accent Color",
-                        set_use_alpha: false,
-                        add_css_class: "background_component",
-                   },
-
-                    append: accent_color_label = &Label {
-                        set_text: "Accent Color",
-                        add_css_class: "background_text",
-                   }
-                },
-
-                append: accent_text_color_box = &Box {
-                    set_orientation: Orientation::Horizontal,
-                    set_spacing: 4,
-                    set_margin_top: 4,
-                    set_margin_bottom: 4,
-                    set_margin_start: 4,
-                    set_margin_end: 4,
-
-                    append: accent_text_color_button = &ColorButton {
-                        set_title: "Accent Text Color",
-                        set_use_alpha: false,
-                        add_css_class: "background_component",
-                    },
-
-                    append: accent_text_color_label = &Label {
-                        set_text: "Accent Text Color",
-                        add_css_class: "background_text",
-                    }
-                },
-
-                append: accent_nav_handle_color_box = &Box {
-                    set_orientation: Orientation::Horizontal,
-                    set_spacing: 4,
-                    set_margin_top: 4,
-                    set_margin_bottom: 4,
-                    set_margin_start: 4,
-                    set_margin_end: 4,
-
-                    append: accent_nav_handle_color_button = &ColorButton {
-                        set_title: "Accent Nav Handle Text Color",
-                        set_use_alpha: false,
-                        add_css_class: "background_component",
-                    },
-
-                    append: accent_nav_handle_color_label = &Label {
-                        set_text: "Accent Nav Handle Text Color",
-                        add_css_class: "background_text",
-                    }
-                },
-
-                append: destructive_color_box = &Box {
-                    set_orientation: Orientation::Horizontal,
-                    set_spacing: 4,
-                    set_margin_top: 4,
-                    set_margin_bottom: 4,
-                    set_margin_start: 4,
-                    set_margin_end: 4,
-
-                    append: destructive_color_button = &ColorButton {
-                        set_title: "Destructive Color",
-                        add_css_class: "background_component",
-                    },
-
-                    append: destructive_color_label = &Label {
-                        set_text: "Destructive Color",
-                        add_css_class: "background_text",
-                    }
-                },
+                append: &background_color_box,
+                append: &primary_color_box,
+                append: &secondary_color_box,
+                append: &accent_color_box,
+                append: &accent_text_color_box,
+                append: &accent_nav_handle_color_box,
+                append: &destructive_color_box,
 
                 append: control_button_box = &Box {
                     set_orientation: Orientation::Horizontal,
@@ -201,7 +83,7 @@ impl ThemeEditor {
                         set_margin_bottom: 4,
                         set_margin_start: 4,
                         set_margin_end: 4,
-                        add_css_class: "background_component",
+                        add_css_class: "background-component",
 
                         set_child = Some(&Label) {
                             set_text: "Save",
@@ -209,7 +91,7 @@ impl ThemeEditor {
                             set_margin_bottom: 4,
                             set_margin_start: 4,
                             set_margin_end: 4,
-                            add_css_class: "background_component_text",
+                            add_css_class: "background-component-text",
                         }
                     },
 
@@ -218,7 +100,7 @@ impl ThemeEditor {
                         set_margin_bottom: 4,
                         set_margin_start: 4,
                         set_margin_end: 4,
-                        add_css_class: "background_component",
+                        add_css_class: "background-component",
 
                         set_child = Some(&Label) {
                             set_text: "Preview",
@@ -226,7 +108,7 @@ impl ThemeEditor {
                             set_margin_bottom: 4,
                             set_margin_start: 4,
                             set_margin_end: 4,
-                            add_css_class: "background_component_text",
+                            add_css_class: "background-component-text",
                         }
                     },
                 },
@@ -237,7 +119,7 @@ impl ThemeEditor {
                     set_margin_bottom: 4,
                     set_margin_start: 4,
                     set_margin_end: 4,
-                    add_css_class: "background_component_divider",
+                    add_css_class: "background-component-divider",
                 },
                 // TODO preview
 
@@ -250,6 +132,7 @@ impl ThemeEditor {
                         set_hexpand: true,
                         set_height_request: 50,
                         add_css_class: "background-component",
+                        add_css_class: "background-component-text",
                         set_text: "Background Component"
                     }
 
@@ -357,6 +240,34 @@ impl ThemeEditor {
             .connect_color_set(glib::clone!(@weak selection => move |self_| {
                 selection.get().set_destructive(self_.rgba());
             }));
+    }
+
+    fn get_color_button(label: &str) -> (Box, ColorButton) {
+        let rgba = SRGBA::default().into();
+        let color_button = cascade! {
+            ColorButton::with_rgba(&rgba);
+            ..set_title(label);
+            ..set_use_alpha(true);
+            ..add_css_class("background-component");
+        };
+        view! {
+            color_box = Box {
+                set_orientation: Orientation::Horizontal,
+                set_spacing: 4,
+                set_margin_top: 4,
+                set_margin_bottom: 4,
+                set_margin_start: 4,
+                set_margin_end: 4,
+
+                append: &color_button,
+
+                append: accent_color_label = &Label {
+                    set_text: label,
+                    add_css_class: "background-text",
+                }
+            }
+        };
+        (color_box, color_button)
     }
 
     fn connect_control_buttons(&self) {

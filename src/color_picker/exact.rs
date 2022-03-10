@@ -2,7 +2,7 @@ use super::ColorPicker;
 use crate::util::SRGBA;
 use anyhow::{bail, Result};
 use float_cmp::approx_eq;
-use palette::{rgb::Srgba, Clamp, IntoColor, Lch, RelativeContrast};
+use palette::{Clamp, IntoColor, Lch, RelativeContrast};
 
 #[derive(Debug, Default)]
 pub struct Exact();

@@ -168,6 +168,9 @@ impl TryFrom<(Selection, ThemeConstraints)> for Theme {
             divider_gray_scale,
             lighten,
         )?;
+        let background_text = picker.pick_color(background, text_contrast_ratio, true, lighten)?;
+        let background_component_text =
+            picker.pick_color(background_component, text_contrast_ratio, true, lighten)?;
         let primary_component =
             picker.pick_color(primary_container, elevated_contrast_ratio, false, lighten)?;
         let primary_component_divider = picker.pick_color(
@@ -176,6 +179,10 @@ impl TryFrom<(Selection, ThemeConstraints)> for Theme {
             divider_gray_scale,
             lighten,
         )?;
+        let primary_container_component_text =
+            picker.pick_color(primary_component, text_contrast_ratio, true, lighten)?;
+        let primary_container_text =
+            picker.pick_color(primary_container, text_contrast_ratio, true, lighten)?;
         let secondary_component =
             picker.pick_color(secondary_container, elevated_contrast_ratio, false, lighten)?;
         let secondary_component_divider = picker.pick_color(
@@ -184,14 +191,23 @@ impl TryFrom<(Selection, ThemeConstraints)> for Theme {
             divider_gray_scale,
             lighten,
         )?;
+        let secondary_container_component_text =
+            picker.pick_color(secondary_component, text_contrast_ratio, true, lighten)?;
+        let secondary_container_text =
+            picker.pick_color(secondary_container, text_contrast_ratio, true, lighten)?;
+
         // TODO allow input of color search heuristic to customize derivation results.
         // For now, simplest heuristic will be used which maintains hues, and only adjusts lightness to get the exact minumum contrast
-        //
 
         Ok(Self {
             background,
+            background_text,
             primary_container,
+            primary_container_text,
+            primary_container_component_text,
             secondary_container,
+            secondary_container_text,
+            secondary_container_component_text,
             accent,
             accent_text,
             accent_nav_handle_text,
@@ -199,6 +215,7 @@ impl TryFrom<(Selection, ThemeConstraints)> for Theme {
             window_header_background,
             background_component,
             background_component_divider,
+            background_component_text,
             primary_component,
             primary_component_divider,
             secondary_component,

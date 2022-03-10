@@ -36,7 +36,7 @@ fn main() {
 
     app.connect_startup(|app| {
         setup_shortcuts(app);
-        load_css()
+        load_css();
     });
     app.connect_activate(move |app| {
         let theme_app = App::new(app);

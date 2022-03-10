@@ -32,6 +32,12 @@ impl From<RGBA> for SRGBA {
     }
 }
 
+impl Into<RGBA> for SRGBA {
+    fn into(self) -> RGBA {
+        RGBA::new(self.red, self.green, self.blue, self.alpha)
+    }
+}
+
 impl Deref for SRGBA {
     type Target = Srgba;
 

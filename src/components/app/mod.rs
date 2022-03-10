@@ -2,7 +2,7 @@
 
 use super::ThemeEditor;
 use cascade::cascade;
-use gtk4::{gio, glib, prelude::*, subclass::prelude::*, Application, Entry};
+use gtk4::{gio, glib, prelude::*, subclass::prelude::*, Application};
 
 mod imp;
 
