@@ -3,6 +3,7 @@
 use components::App;
 use gtk4::{gdk::Display, prelude::*, Application, CssProvider, StyleContext};
 
+mod color_picker;
 mod components;
 mod model;
 mod util;

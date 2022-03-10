@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
-
+use crate::model::Theme;
 use cascade::cascade;
 use gtk4::{
-    gio, glib, prelude::*, subclass::prelude::*, Box, Button, ColorButton, ColorChooser, Entry,
-    Label, Orientation, Separator,
+    builders::ButtonBuilder, gio, glib, prelude::*, subclass::prelude::*, Box, Button, ColorButton,
+    DialogFlags, Entry, Label, MessageDialog, MessageType, Orientation, Separator, Window,
 };
 use relm4_macros::view;
-
+use std::rc::Rc;
 mod imp;
 
 glib::wrapper! {
@@ -46,23 +46,6 @@ impl ThemeEditor {
                 append: name = &Entry {
                     set_placeholder_text: Some("Theme Name"),
                     set_width_request: 160,
-                },
-
-                append: background_color_box = &Box {
-                    set_orientation: Orientation::Horizontal,
-                    set_spacing: 4,
-                    set_margin_top: 4,
-                    set_margin_bottom: 4,
-                    set_margin_start: 4,
-                    set_margin_end: 4,
-
-                    append: background_color_button = &ColorButton {
-                        set_title: "Background Color",
-                    },
-
-                    append: backgrounf_color_label = &Label {
-                        set_text: "Background Color",
-                    }
                 },
 
                 append: background_color_box = &Box {
@@ -329,7 +312,7 @@ impl ThemeEditor {
         let theme = &imp.theme;
         let constraints = &imp.constraints;
 
-        imp.save.get().unwrap().connect_activate(
+        imp.save.get().unwrap().connect_clicked(
             glib::clone!(@weak selection, @weak theme, @weak constraints => move |_| {
                 // TODO convert theme ron & css file
                 // TODO convert constraints & selection to ron
@@ -337,13 +320,40 @@ impl ThemeEditor {
             }),
         );
 
-        imp.save.get().unwrap().connect_activate(
-            glib::clone!(@weak selection, @weak theme, @weak constraints => move |_| {
+        imp.preview.get().unwrap().connect_clicked(
+            glib::clone!(@weak selection, @weak theme, @weak constraints, @weak self as parent => move |self_| {
                 // TODO convert constraints & selection to theme
                 // TODO convert theme to CSS
                 // TODO load css so that the preview displays the proper theme
-                todo!();
+                println!("generating new theme");
+                if let Ok(new_theme) =  Theme::try_from((selection.get(), constraints.get())) {
+                    dbg!(new_theme);
+                    theme.set(new_theme);
+                } else {
+                    eprintln!("failed to create new theme...");
+                    let window = self_.root().map(|root| {
+                        if let Ok(w) = root.downcast::<Window>() {
+                            Some(w)
+                        } else {
+                            None
+                        }
+                    }).unwrap_or_default();
+                    if let Some(window) = window {
+                        glib::MainContext::default().spawn_local(Self::dialog(window));
+                    }
+                }
             }),
         );
+    }
+
+    async fn dialog(window: Window) {
+        let msg_dialog = MessageDialog::builder()
+            .transient_for(&window)
+            .modal(true)
+            .buttons(gtk4::ButtonsType::Close)
+            .text("Could not generate theme given the selection and constraints")
+            .build();
+        let _ = msg_dialog.run_future().await;
+        msg_dialog.close();
     }
 }

@@ -19,21 +19,27 @@ impl Selection {
     pub fn set_background(&mut self, rgba: RGBA) {
         self.background = srgb_from_rgba(rgba);
     }
+
     pub fn set_primary_container(&mut self, rgba: RGBA) {
         self.background = srgb_from_rgba(rgba);
     }
+
     pub fn set_secondary_container(&mut self, rgba: RGBA) {
         self.background = srgb_from_rgba(rgba);
     }
+
     pub fn set_accent_color(&mut self, rgba: RGBA) {
         self.background = srgb_from_rgba(rgba);
     }
+
     pub fn set_accent_text_color(&mut self, rgba: RGBA) {
         self.background = srgb_from_rgba(rgba);
     }
+
     pub fn set_accent_nav_handle_text_color(&mut self, rgba: RGBA) {
         self.background = srgb_from_rgba(rgba);
     }
+
     pub fn set_destructive(&mut self, rgba: RGBA) {
         self.background = srgb_from_rgba(rgba);
     }
