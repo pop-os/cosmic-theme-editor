@@ -177,64 +177,81 @@ impl TryFrom<(Selection, ThemeConstraints)> for Theme {
 
         let window_header_background = background;
         let background_component =
-            picker.pick_color(background, elevated_contrast_ratio, false, lighten)?;
+            picker.pick_color(background, elevated_contrast_ratio, false, Some(lighten))?;
         let background_divider = picker.pick_color(
             background,
             divider_contrast_ratio,
             divider_gray_scale,
-            lighten,
+            Some(lighten),
         )?;
         let background_component_divider = picker.pick_color(
             background_component,
             divider_contrast_ratio,
             divider_gray_scale,
-            lighten,
+            Some(lighten),
         )?;
-        let background_text = picker.pick_color(background, text_contrast_ratio, true, lighten)?;
-        let background_component_text =
-            picker.pick_color(background_component, text_contrast_ratio, true, lighten)?;
+        let background_text =
+            picker.pick_color(background, text_contrast_ratio, true, Some(lighten))?;
+        let background_component_text = picker.pick_color(
+            background_component,
+            text_contrast_ratio,
+            true,
+            Some(lighten),
+        )?;
 
-        let primary_container_component =
-            picker.pick_color(primary_container, elevated_contrast_ratio, false, lighten)?;
+        let primary_container_component = picker.pick_color(
+            primary_container,
+            elevated_contrast_ratio,
+            false,
+            Some(lighten),
+        )?;
         let primary_container_component_divider = picker.pick_color(
             primary_container,
             divider_contrast_ratio,
             divider_gray_scale,
-            lighten,
+            Some(lighten),
         )?;
 
         let primary_container_component_text = picker.pick_color(
             primary_container_component,
             text_contrast_ratio,
             true,
-            lighten,
+            Some(lighten),
         )?;
         let primary_container_text =
-            picker.pick_color(primary_container, text_contrast_ratio, true, lighten)?;
+            picker.pick_color(primary_container, text_contrast_ratio, true, Some(lighten))?;
 
-        let secondary_container_component =
-            picker.pick_color(secondary_container, elevated_contrast_ratio, false, lighten)?;
+        let secondary_container_component = picker.pick_color(
+            secondary_container,
+            elevated_contrast_ratio,
+            false,
+            Some(lighten),
+        )?;
         let secondary_container_component_divider = picker.pick_color(
             secondary_container,
             divider_contrast_ratio,
             divider_gray_scale,
-            lighten,
+            Some(lighten),
         )?;
         let secondary_container_component_text = picker.pick_color(
             secondary_container_component,
             text_contrast_ratio,
             true,
-            lighten,
+            Some(lighten),
         )?;
-        let secondary_container_text =
-            picker.pick_color(secondary_container, text_contrast_ratio, true, lighten)?;
+        let secondary_container_text = picker.pick_color(
+            secondary_container,
+            text_contrast_ratio,
+            true,
+            Some(lighten),
+        )?;
 
         let destructive_button_text =
-            picker.pick_color(destructive, text_contrast_ratio, true, lighten)?;
+            picker.pick_color(destructive, text_contrast_ratio, true, None)?;
 
         let suggested = accent;
         let suggested_button_text =
-            picker.pick_color(suggested, text_contrast_ratio, true, lighten)?;
+            picker.pick_color(suggested, text_contrast_ratio, true, None)?;
 
         Ok(Self {
             background,

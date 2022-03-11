@@ -10,6 +10,6 @@ pub trait ColorPicker {
         color: SRGBA,
         contrast: f32,
         grayscale: bool,
-        lighten: bool,
+        lighten: Option<bool>,
     ) -> Result<SRGBA>;
 }
