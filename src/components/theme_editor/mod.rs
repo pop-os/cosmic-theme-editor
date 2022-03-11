@@ -5,7 +5,8 @@ use crate::{model::Theme, util::SRGBA};
 use cascade::cascade;
 use gtk4::{
     gdk, gio, glib, prelude::*, subclass::prelude::*, Box, Button, ColorButton, CssProvider, Entry,
-    Label, MessageDialog, Orientation, ScrolledWindow, Separator, StyleContext, Window,
+    Label, MessageDialog, Orientation, ScrolledWindow, Separator, StyleContext, ToggleButton,
+    Window,
 };
 use relm4_macros::view;
 mod imp;
@@ -49,6 +50,16 @@ impl ThemeEditor {
         let (destructive_color_box, destructive_color_button) =
             Self::get_color_button("Destructive Color");
 
+        let lighten_elevated_surfaces = cascade! {
+            ToggleButton::with_label("Lighten Elevated Surfaces");
+            ..set_active(imp.constraints.get().lighten);
+            ..set_margin_top(4);
+            ..set_margin_bottom(4);
+            ..set_margin_start(4);
+            ..set_margin_end(4);
+            ..add_css_class("background-component");
+        };
+
         view! {
             inner = Box {
                 set_orientation: Orientation::Vertical,
@@ -63,6 +74,7 @@ impl ThemeEditor {
                     set_width_request: 160,
                 },
 
+                append: &lighten_elevated_surfaces,
                 append: &background_color_box,
                 append: &primary_color_box,
                 append: &secondary_color_box,
@@ -326,6 +338,9 @@ impl ThemeEditor {
         imp.save.set(save_button).unwrap();
         imp.preview.set(preview_button).unwrap();
 
+        imp.lighten_elevated_surfaces
+            .set(lighten_elevated_surfaces)
+            .unwrap();
         // color buttons
         imp.background_color_button
             .set(background_color_button)
@@ -347,8 +362,23 @@ impl ThemeEditor {
 
         self_.connect_color_buttons();
         self_.connect_control_buttons();
+        self_.connect_toggle();
 
         self_
+    }
+
+    fn connect_toggle(&self) {
+        let imp = imp::ThemeEditor::from_instance(&self);
+        let constraints = &imp.constraints;
+
+        imp.lighten_elevated_surfaces
+            .get()
+            .unwrap()
+            .connect_toggled(glib::clone!(@weak constraints => move |toggle| {
+                let mut c = constraints.get();
+                c.lighten = toggle.is_active();
+                constraints.set(c);
+            }));
     }
 
     fn connect_color_buttons(&self) {
