@@ -136,7 +136,7 @@ impl ThemeEditor {
                         set_margin_bottom: 4,
                         set_margin_start: 4,
                         set_margin_end: 4,
-                        add_css_class: "destructive-button",
+                        add_css_class: "destructive-action",
 
                         set_child = Some(&Label) {
                             set_text: "Destructive",
@@ -144,7 +144,6 @@ impl ThemeEditor {
                             set_margin_bottom: 4,
                             set_margin_start: 4,
                             set_margin_end: 4,
-                            add_css_class: "destructive-button-text",
                         }
                     },
 
@@ -153,7 +152,7 @@ impl ThemeEditor {
                         set_margin_bottom: 4,
                         set_margin_start: 4,
                         set_margin_end: 4,
-                        add_css_class: "suggested-button",
+                        add_css_class: "suggested-action",
 
                         set_child = Some(&Label) {
                             set_text: "Suggested",
@@ -161,7 +160,6 @@ impl ThemeEditor {
                             set_margin_bottom: 4,
                             set_margin_start: 4,
                             set_margin_end: 4,
-                            add_css_class: "suggested-button-text",
                         }
                     },
                 },
@@ -178,7 +176,6 @@ impl ThemeEditor {
 
                     append = &Label {
                         set_hexpand: true,
-                        add_css_class: "background-text",
                         set_margin_top: 8,
                         set_margin_bottom: 8,
                         set_margin_start: 8,
@@ -198,7 +195,6 @@ impl ThemeEditor {
 
                         append = &Label {
                             set_hexpand: true,
-                            add_css_class: "background-component-text",
                             set_margin_top: 8,
                             set_margin_bottom: 8,
                             set_margin_start: 8,
@@ -228,7 +224,6 @@ impl ThemeEditor {
 
                         append = &Label {
                             set_hexpand: true,
-                            add_css_class: "primary-container-text",
                             set_margin_top: 8,
                             set_margin_bottom: 8,
                             set_margin_start: 8,
@@ -248,7 +243,6 @@ impl ThemeEditor {
 
                             append = &Label {
                                 set_hexpand: true,
-                                add_css_class: "primary-container-component-text",
                                 set_margin_top: 8,
                                 set_margin_bottom: 8,
                                 set_margin_start: 8,
@@ -278,7 +272,6 @@ impl ThemeEditor {
 
                             append = &Label {
                                 set_hexpand: true,
-                                add_css_class: "secondary-container-text",
                                 set_margin_top: 8,
                                 set_margin_bottom: 8,
                                 set_margin_start: 8,
@@ -298,7 +291,6 @@ impl ThemeEditor {
 
                                 append = &Label {
                                     set_hexpand: true,
-                                    add_css_class: "secondary-container-component-text",
                                     set_margin_top: 8,
                                     set_margin_bottom: 8,
                                     set_margin_start: 8,
@@ -422,7 +414,7 @@ impl ThemeEditor {
             .connect_color_set(glib::clone!(@weak selection => move |self_| {
                 let mut c = selection.get();
                 c.set_destructive(self_.rgba());
-                selection.set(c);
+                selection.set(c)
             }));
     }
 

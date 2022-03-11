@@ -128,16 +128,18 @@ background-color: {secondary_container_component_divider};
 }}
 
 * {{
+background-image: none;
 outline-color: {accent};
 }}
 
-.suggested-button {{
+button.suggested-action {{
 background-color: {accent};
-color: accent_text;
+color: {suggested_button_text};
 }}
 
-.destructive-button {{
+button.destructive-action {{
 background-color: {destructive};
+outline-color: {destructive};
 color: {destructive_button_text};
 }}
 "#
