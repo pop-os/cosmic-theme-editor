@@ -87,62 +87,58 @@ impl Theme {
             r#"/* WIP CSS preview generation */
 .background {{
 background-color: {background};
+color: {background_text};
 }}
 
 .background-component {{
 background-color: {background_component};
+color: {background_component_text};
 }}
 
 .background-componenet-divider {{
 background-color: {background_component_divider};
 }}
 
-.background-text {{
-color: {background_text};
-}}
-
-.background-component-text {{
-color: {background_component_text};
-}}
-
 .primary-container {{
 background-color: {primary_container};
+color: {primary_container_text};
 }}
 
 .primary-container-component {{
 background-color: {primary_container_component};
+color: {primary_container_component_text};
 }}
 
 .primary-container-componenet-divider {{
 background-color: {primary_container_component_divider};
 }}
 
-.primary-container-text {{
-color: {primary_container_text};
-}}
-
-.primary-container-component-text {{
-color: {primary_container_component_text};
-}}
-
 .secondary-container {{
 background-color: {secondary_container};
+color: {secondary_container_text};
 }}
 
 .secondary-container-component {{
 background-color: {secondary_container_component};
+color: {secondary_container_component_text};
 }}
 
 .secondary-container-componenet-divider {{
 background-color: {secondary_container_component_divider};
 }}
 
-.secondary-container-text {{
-color: {secondary_container_text};
+* {{
+outline-color: {accent};
 }}
 
-.secondary-container-component-text {{
-color: {secondary_container_component_text};
+.suggested-button {{
+background-color: {accent};
+color: accent_text;
+}}
+
+.destructive-button {{
+background-color: {destructive};
+color: {destructive_button_text};
 }}
 "#
         )
@@ -234,6 +230,10 @@ impl TryFrom<(Selection, ThemeConstraints)> for Theme {
         let destructive_button_text =
             picker.pick_color(destructive, text_contrast_ratio, true, lighten)?;
 
+        let suggested = accent;
+        let suggested_button_text =
+            picker.pick_color(suggested, text_contrast_ratio, true, lighten)?;
+
         Ok(Self {
             background,
             background_divider,
@@ -261,6 +261,7 @@ impl TryFrom<(Selection, ThemeConstraints)> for Theme {
             destructive,
             destructive_button_text,
 
+            suggested_button_text,
             window_header_background,
 
             ..Default::default()

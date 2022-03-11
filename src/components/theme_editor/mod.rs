@@ -1,10 +1,11 @@
+use std::fmt::Display;
+
 // SPDX-License-Identifier: GPL-3.0-only
 use crate::{model::Theme, util::SRGBA};
 use cascade::cascade;
 use gtk4::{
-    gdk::Display, gio, glib, prelude::*, subclass::prelude::*, Box, Button, ColorButton,
-    CssProvider, Entry, Label, MessageDialog, Orientation, ScrolledWindow, Separator, StyleContext,
-    Window,
+    gdk, gio, glib, prelude::*, subclass::prelude::*, Box, Button, ColorButton, CssProvider, Entry,
+    Label, MessageDialog, Orientation, ScrolledWindow, Separator, StyleContext, Window,
 };
 use relm4_macros::view;
 mod imp;
@@ -46,7 +47,7 @@ impl ThemeEditor {
         let (accent_nav_handle_color_box, accent_nav_handle_color_button) =
             Self::get_color_button("Accent Nav Text Color");
         let (destructive_color_box, destructive_color_button) =
-            Self::get_color_button("Accent Nav Text Color");
+            Self::get_color_button("Destructive Color");
 
         view! {
             inner = Box {
@@ -120,6 +121,49 @@ impl ThemeEditor {
                     set_margin_start: 8,
                     set_margin_end: 8,
                     add_css_class: "background-divider",
+                },
+
+                append = &Box {
+                    set_orientation: Orientation::Horizontal,
+                    set_spacing: 4,
+                    set_margin_top: 4,
+                    set_margin_bottom: 4,
+                    set_margin_start: 4,
+                    set_margin_end: 4,
+
+                    append = &Button {
+                        set_margin_top: 4,
+                        set_margin_bottom: 4,
+                        set_margin_start: 4,
+                        set_margin_end: 4,
+                        add_css_class: "destructive-button",
+
+                        set_child = Some(&Label) {
+                            set_text: "Destructive",
+                            set_margin_top: 4,
+                            set_margin_bottom: 4,
+                            set_margin_start: 4,
+                            set_margin_end: 4,
+                            add_css_class: "destructive-button-text",
+                        }
+                    },
+
+                    append = &Button {
+                        set_margin_top: 4,
+                        set_margin_bottom: 4,
+                        set_margin_start: 4,
+                        set_margin_end: 4,
+                        add_css_class: "suggested-button",
+
+                        set_child = Some(&Label) {
+                            set_text: "Suggested",
+                            set_margin_top: 4,
+                            set_margin_bottom: 4,
+                            set_margin_start: 4,
+                            set_margin_end: 4,
+                            add_css_class: "suggested-button-text",
+                        }
+                    },
                 },
 
                 append = &Box {
@@ -358,7 +402,7 @@ impl ThemeEditor {
         imp.accent_color_button.get().unwrap().connect_color_set(
             glib::clone!(@weak selection => move |self_| {
                 let mut c = selection.get();
-                selection.get().set_accent_color(self_.rgba());
+                c.set_accent_color(self_.rgba());
                 selection.set(c);
             }),
         );
@@ -367,14 +411,18 @@ impl ThemeEditor {
             .get()
             .unwrap()
             .connect_color_set(glib::clone!(@weak selection => move |self_| {
-                selection.get().set_accent_nav_handle_text_color(self_.rgba());
+                let mut c = selection.get();
+                c.set_accent_nav_handle_text_color(self_.rgba());
+                selection.set(c);
             }));
 
         imp.destructive_color_button
             .get()
             .unwrap()
             .connect_color_set(glib::clone!(@weak selection => move |self_| {
-                selection.get().set_destructive(self_.rgba());
+                let mut c = selection.get();
+                c.set_destructive(self_.rgba());
+                selection.set(c);
             }));
     }
 
@@ -422,11 +470,9 @@ impl ThemeEditor {
 
         imp.preview.get().unwrap().connect_clicked(
             glib::clone!(@weak selection, @weak theme, @weak constraints, @weak self as parent => move |self_| {
-                // TODO convert constraints & selection to theme
-                // TODO convert theme to CSS
-                // TODO load css so that the preview displays the proper theme
                 println!("generating new theme");
-                if let Ok(new_theme) =  Theme::try_from((selection.get(), constraints.get())) {
+                let res = Theme::try_from((selection.get(), constraints.get()));
+                if let Ok(new_theme) = res {
                     dbg!(new_theme);
                     theme.set(new_theme);
                     let preview_css = theme.get().as_css();
@@ -435,12 +481,12 @@ impl ThemeEditor {
                     let provider = CssProvider::new();
                     provider.load_from_data(preview_css.as_bytes());
                     StyleContext::add_provider_for_display(
-                        &Display::default().expect("Error initializing GTK CSS provider."),
+                        &gdk::Display::default().expect("Error initializing GTK CSS provider."),
                         &provider,
                         gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
                     );
 
-                } else {
+                } else if let Err(err) = res {
                     eprintln!("failed to create new theme...");
                     let window = self_.root().map(|root| {
                         if let Ok(w) = root.downcast::<Window>() {
@@ -450,19 +496,19 @@ impl ThemeEditor {
                         }
                     }).unwrap_or_default();
                     if let Some(window) = window {
-                        glib::MainContext::default().spawn_local(Self::dialog(window));
+                        glib::MainContext::default().spawn_local(Self::dialog(window, err));
                     }
                 }
             }),
         );
     }
 
-    async fn dialog(window: Window) {
+    async fn dialog<T: Display>(window: Window, msg: T) {
         let msg_dialog = MessageDialog::builder()
             .transient_for(&window)
             .modal(true)
             .buttons(gtk4::ButtonsType::Close)
-            .text("Could not generate theme given the selection and constraints")
+            .text(&format!("{}", msg))
             .build();
         let _ = msg_dialog.run_future().await;
         msg_dialog.close();

@@ -16,7 +16,6 @@ impl ColorPicker for Exact {
         lighten: bool,
     ) -> Result<SRGBA> {
         let mut lch_color: Lch = (*color).into_color();
-        dbg!(lch_color);
 
         // set to grayscale
         if grayscale {
@@ -34,12 +33,10 @@ impl ColorPicker for Exact {
         let (mut l, mut r) = (min, max);
 
         for _ in 0..100 {
-            dbg!((l, r));
             let cur_guess_lightness = (l + r) / 2.0;
             let mut cur_guess = lch_color;
             cur_guess.l = cur_guess_lightness;
             let cur_contrast = color.get_contrast_ratio(&cur_guess.into_color());
-            dbg!((cur_guess_lightness, cur_contrast));
             if approx_eq!(f32, contrast, cur_contrast, ulps = 4) {
                 lch_color = cur_guess;
                 break;
@@ -50,15 +47,17 @@ impl ColorPicker for Exact {
             }
         }
 
-        dbg!(lch_color);
         // clamp to valid value in range
         lch_color.clamp_self();
 
         // verify contrast
         let actual_contrast = color.get_contrast_ratio(&lch_color.into_color());
-        dbg!((contrast, actual_contrast));
         if !approx_eq!(f32, contrast, actual_contrast, ulps = 4) {
-            bail!("Generated color does not match desired contrast exactly!");
+            bail!(
+                "Failed to derive color with contrast {} from {}",
+                contrast,
+                color
+            );
         }
 
         Ok(SRGBA(lch_color.into_color()))
