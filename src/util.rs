@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 use core::fmt;
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 use gtk4::gdk::RGBA;
 use hex::encode;
@@ -43,6 +43,12 @@ impl Deref for SRGBA {
 
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl DerefMut for SRGBA {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }
 

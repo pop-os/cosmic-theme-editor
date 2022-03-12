@@ -1,98 +1,19 @@
 use super::{Selection, ThemeConstraints};
-use crate::{
-    color_picker::{ColorPicker, Exact},
-    util::SRGBA,
-};
+use crate::{color_picker::ColorPicker, util::SRGBA};
+use anyhow::bail;
+use palette::{IntoColor, Lcha, Shade, Srgba};
+use std::fmt;
+
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 pub struct ContainerDerivation {
     pub container: SRGBA,
-    pub container_component: WidgetStates,
+    pub container_component: Widget,
     pub container_divider: SRGBA,
     pub container_text: SRGBA,
     pub container_text_opacity_80: SRGBA,
 }
-// let accent_text = accent_text.unwrap_or(accent);
-//  let accent_nav_handle_text = accent_nav_handle_text.unwrap_or(accent);
-//  let picker = Exact::default();
 
-//  let window_header_background = background;
-//  let background_component =
-//      picker.pick_color(background, elevated_contrast_ratio, false, Some(lighten))?;
-//  let background_divider = picker.pick_color(
-//      background,
-//      divider_contrast_ratio,
-//      divider_gray_scale,
-//      Some(lighten),
-//  )?;
-//  let background_component_divider = picker.pick_color(
-//      background_component,
-//      divider_contrast_ratio,
-//      divider_gray_scale,
-//      Some(lighten),
-//  )?;
-//  let background_text =
-//      picker.pick_color(background, text_contrast_ratio, true, Some(lighten))?;
-//  let background_component_text = picker.pick_color(
-//      background_component,
-//      text_contrast_ratio,
-//      true,
-//      Some(lighten),
-//  )?;
-
-//  let primary_container_component = picker.pick_color(
-//      primary_container,
-//      elevated_contrast_ratio,
-//      false,
-//      Some(lighten),
-//  )?;
-//  let primary_container_component_divider = picker.pick_color(
-//      primary_container,
-//      divider_contrast_ratio,
-//      divider_gray_scale,
-//      Some(lighten),
-//  )?;
-
-//  let primary_container_component_text = picker.pick_color(
-//      primary_container_component,
-//      text_contrast_ratio,
-//      true,
-//      Some(lighten),
-//  )?;
-//  let primary_container_text =
-//      picker.pick_color(primary_container, text_contrast_ratio, true, Some(lighten))?;
-
-//  let secondary_container_component = picker.pick_color(
-//      secondary_container,
-//      elevated_contrast_ratio,
-//      false,
-//      Some(lighten),
-//  )?;
-//  let secondary_container_component_divider = picker.pick_color(
-//      secondary_container,
-//      divider_contrast_ratio,
-//      divider_gray_scale,
-//      Some(lighten),
-//  )?;
-//  let secondary_container_component_text = picker.pick_color(
-//      secondary_container_component,
-//      text_contrast_ratio,
-//      true,
-//      Some(lighten),
-//  )?;
-//  let secondary_container_text = picker.pick_color(
-//      secondary_container,
-//      text_contrast_ratio,
-//      true,
-//      Some(lighten),
-//  )?;
-
-//  let destructive_button_text =
-//      picker.pick_color(destructive, text_contrast_ratio, true, None)?;
-
-//  let suggested = accent;
-//  let suggested_button_text =
-//      picker.pick_color(suggested, text_contrast_ratio, true, None)?;
-
+// TODO use for descriptive error messages below...
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum Container {
     Background,
@@ -100,20 +21,32 @@ pub enum Container {
     Secondary,
 }
 
-impl TryFrom<(Selection, ThemeConstraints, Container)> for ContainerDerivation {
+impl fmt::Display for Container {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Container::Background => write!(f, "Background"),
+            Container::Primary => write!(f, "Primary Container"),
+            Container::Secondary => write!(f, "Secondary Container"),
+        }
+    }
+}
+
+impl<T: ColorPicker> TryFrom<(Selection, ThemeConstraints, T, Container)> for ContainerDerivation {
     type Error = anyhow::Error;
 
     fn try_from(
-        (selection, constraints, Container): (Selection, ThemeConstraints, Container),
+        (selection, constraints, picker, container_type): (
+            Selection,
+            ThemeConstraints,
+            T,
+            Container,
+        ),
     ) -> Result<Self, Self::Error> {
         let Selection {
             background,
             primary_container,
             secondary_container,
-            accent,
-            accent_text,
-            accent_nav_handle_text,
-            destructive,
+            ..
         } = selection;
 
         let ThemeConstraints {
@@ -123,52 +56,74 @@ impl TryFrom<(Selection, ThemeConstraints, Container)> for ContainerDerivation {
             divider_gray_scale,
             lighten,
         } = constraints;
-        todo!()
+
+        let container = match container_type {
+            Container::Background => background,
+            Container::Primary => primary_container,
+            Container::Secondary => secondary_container,
+        };
+        let container_divider = match picker.pick_color(
+            container,
+            divider_contrast_ratio,
+            divider_gray_scale,
+            Some(lighten),
+        ) {
+            Ok(c) => c,
+            Err(e) => bail!("{} => \"container divider\" failed: {}", container_type, e),
+        };
+
+        let container_text =
+            match picker.pick_color(container, text_contrast_ratio, true, Some(lighten)) {
+                Ok(c) => c,
+                Err(e) => bail!("{} => \"container text\" failed: {}", container_type, e),
+            };
+
+        // TODO revisit this and adjust constraints for transparency
+        let mut container_text_opacity_80 = container_text;
+        (*container_text_opacity_80).alpha *= 0.8;
+
+        let component_default =
+            match picker.pick_color(container, elevated_contrast_ratio, false, Some(lighten)) {
+                Ok(c) => c,
+                Err(e) => bail!(
+                    "{} => \"container component default\" failed: {}",
+                    container_type,
+                    e
+                ),
+            };
+
+        let container_component = match Widget::try_from((component_default, constraints, picker)) {
+            Ok(c) => c,
+            Err(e) => bail!(
+                "{} => \"container component derivation\" failed: {}",
+                container_type,
+                e
+            ),
+        };
+
+        Ok(Self {
+            container,
+            container_divider,
+            container_text,
+            container_text_opacity_80,
+            container_component,
+        })
     }
 }
 
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 pub struct AccentDerivation {
-    pub accent: WidgetStates,
+    pub accent: SRGBA,
     pub accent_text: SRGBA,
     pub accent_nav_handle_text: SRGBA,
-    pub suggested: WidgetStates,
+    pub suggested: Widget,
 }
 
-impl TryFrom<(Selection, ThemeConstraints)> for AccentDerivation {
+impl<T: ColorPicker> TryFrom<(Selection, ThemeConstraints, T)> for AccentDerivation {
     type Error = anyhow::Error;
 
     fn try_from(
-        (selection, constraints): (Selection, ThemeConstraints),
-    ) -> Result<Self, Self::Error> {
-        let Selection {
-            background,
-            primary_container,
-            secondary_container,
-            ..
-        } = selection;
-
-        let ThemeConstraints {
-            elevated_contrast_ratio,
-            divider_contrast_ratio,
-            text_contrast_ratio,
-            divider_gray_scale,
-            lighten,
-        } = constraints;
-        todo!()
-    }
-}
-
-#[derive(Copy, Clone, PartialEq, Debug, Default)]
-pub struct DestructiveDerivation {
-    pub destructive: WidgetStates,
-}
-
-impl TryFrom<(Selection, ThemeConstraints)> for DestructiveDerivation {
-    type Error = anyhow::Error;
-
-    fn try_from(
-        (selection, constraints): (Selection, ThemeConstraints),
+        (selection, constraints, picker): (Selection, ThemeConstraints, T),
     ) -> Result<Self, Self::Error> {
         let Selection {
             accent,
@@ -177,43 +132,120 @@ impl TryFrom<(Selection, ThemeConstraints)> for DestructiveDerivation {
             ..
         } = selection;
 
-        let ThemeConstraints {
-            elevated_contrast_ratio,
-            divider_contrast_ratio,
-            text_contrast_ratio,
-            divider_gray_scale,
-            lighten,
-        } = constraints;
-        todo!()
+        let suggested = Widget::try_from((accent, constraints, picker))?;
+        let accent_text = accent_text.unwrap_or(accent);
+        let accent_nav_handle_text = accent_nav_handle_text.unwrap_or(accent);
+
+        Ok(Self {
+            accent,
+            accent_text,
+            accent_nav_handle_text,
+            suggested,
+        })
     }
 }
 
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
-pub struct WidgetStates {
-    default: SRGBA,
-    hover: SRGBA,
-    pressed: SRGBA,
-    focused: SRGBA,
-    divider: SRGBA,
-    text: SRGBA,
-    // XXX this should ideally maintain AAA contrast, and failing that, color chooser should raise warnings
-    text_opacity_80: SRGBA,
-    // these are transparent but are not required to maintain contrast
-    disabled: SRGBA,
-    disabled_text: SRGBA,
+pub struct DestructiveDerivation {
+    pub destructive: Widget,
 }
 
-impl TryFrom<(SRGBA, ThemeConstraints)> for WidgetStates {
+impl<T: ColorPicker> TryFrom<(Selection, ThemeConstraints, T)> for DestructiveDerivation {
     type Error = anyhow::Error;
 
-    fn try_from((default, constraints): (SRGBA, ThemeConstraints)) -> Result<Self, Self::Error> {
+    fn try_from(
+        (selection, constraints, picker): (Selection, ThemeConstraints, T),
+    ) -> Result<Self, Self::Error> {
+        Ok(Self {
+            destructive: (selection.destructive, constraints, picker).try_into()?,
+        })
+    }
+}
+
+#[derive(Copy, Clone, PartialEq, Debug, Default)]
+pub struct Widget {
+    pub default: SRGBA,
+    pub hover: SRGBA,
+    pub pressed: SRGBA,
+    pub focused: SRGBA,
+    pub divider: SRGBA,
+    pub text: SRGBA,
+    // XXX this should ideally maintain AAA contrast, and failing that, color chooser should raise warnings
+    pub text_opacity_80: SRGBA,
+    // these are transparent but are not required to maintain contrast
+    pub disabled: SRGBA,
+    pub disabled_text: SRGBA,
+}
+
+impl<T: ColorPicker> TryFrom<(SRGBA, ThemeConstraints, T)> for Widget {
+    type Error = anyhow::Error;
+
+    fn try_from(
+        (default, constraints, picker): (SRGBA, ThemeConstraints, T),
+    ) -> Result<Self, Self::Error> {
         let ThemeConstraints {
-            elevated_contrast_ratio,
             divider_contrast_ratio,
             text_contrast_ratio,
             divider_gray_scale,
             lighten,
+            ..
         } = constraints;
-        todo!()
+
+        let lch = Lcha {
+            color: default.color.into_color(),
+            alpha: default.alpha,
+        };
+
+        let hover = lch;
+        if lighten {
+            hover.lighten(0.1);
+        } else {
+            hover.darken(0.1);
+        }
+
+        let pressed = hover;
+        if lighten {
+            pressed.lighten(0.1);
+        } else {
+            pressed.darken(0.1);
+        }
+        let pressed = SRGBA(Srgba {
+            color: pressed.color.into_color(),
+            alpha: pressed.alpha,
+        });
+
+        // TODO is this actually a different color? or just outlined?
+        let focused = default;
+
+        let mut disabled = default;
+        (*disabled).alpha = 0.5;
+
+        let divider = picker.pick_color(
+            pressed,
+            divider_contrast_ratio,
+            divider_gray_scale,
+            Some(lighten),
+        )?;
+        let text = picker.pick_color(pressed, text_contrast_ratio, true, None)?;
+        let mut text_opacity_80 = text;
+        (*text_opacity_80).alpha = 0.8;
+
+        let mut disabled_text = text;
+        (*disabled_text).alpha = 0.5;
+
+        Ok(Self {
+            default,
+            hover: SRGBA(Srgba {
+                color: hover.color.into_color(),
+                alpha: hover.alpha,
+            }),
+            pressed,
+            focused,
+            divider,
+            text,
+            text_opacity_80,
+            disabled,
+            disabled_text,
+        })
     }
 }

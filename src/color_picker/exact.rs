@@ -4,7 +4,7 @@ use anyhow::{bail, Result};
 use float_cmp::approx_eq;
 use palette::{Clamp, IntoColor, Lch, RelativeContrast};
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Exact();
 
 impl ColorPicker for Exact {
