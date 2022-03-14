@@ -4,7 +4,10 @@ use gtk4::{gio, glib, subclass::prelude::*, Button, ColorButton, Entry, ToggleBu
 use once_cell::sync::OnceCell;
 use std::{cell::Cell, rc::Rc};
 
-use crate::model::{Selection, Theme, ThemeConstraints};
+use crate::{
+    components::FileButton,
+    model::{Selection, Theme, ThemeConstraints},
+};
 
 // Object holding the state
 #[derive(Default)]
@@ -12,6 +15,7 @@ pub struct ThemeEditor {
     pub name: OnceCell<Entry>,
     pub save: OnceCell<Button>,
     pub preview: OnceCell<Button>,
+    pub file_button: OnceCell<FileButton>,
     pub lighten_elevated_surfaces: OnceCell<ToggleButton>,
     pub background_color_button: OnceCell<ColorButton>,
     pub primary_color_button: OnceCell<ColorButton>,

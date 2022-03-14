@@ -72,11 +72,10 @@ impl<T: ColorPicker> TryFrom<(Selection, ThemeConstraints, T, Container)> for Co
             Err(e) => bail!("{} => \"container divider\" failed: {}", container_type, e),
         };
 
-        let container_text =
-            match picker.pick_color(container, text_contrast_ratio, true, Some(lighten)) {
-                Ok(c) => c,
-                Err(e) => bail!("{} => \"container text\" failed: {}", container_type, e),
-            };
+        let container_text = match picker.pick_color(container, text_contrast_ratio, true, None) {
+            Ok(c) => c,
+            Err(e) => bail!("{} => \"container text\" failed: {}", container_type, e),
+        };
 
         // TODO revisit this and adjust constraints for transparency
         let mut container_text_opacity_80 = container_text;
