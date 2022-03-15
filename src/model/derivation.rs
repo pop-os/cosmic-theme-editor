@@ -47,12 +47,18 @@ impl AsCss for Container {
             ContainerType::Primary => "primary-container",
             ContainerType::Secondary => "secondary-container",
         };
+        let top_level_border_radius = if self.prefix != ContainerType::Background {
+            "border-radius: 8px;"
+        } else {
+            ""
+        };
+
         format!(
             r#"/* {prefix_lower} CSS */
 *.{prefix_lower} {{
   background-color: {container};
   color: {container_text};
-  border-radius: 8px;
+  {top_level_border_radius}
 }}
 
 *.{prefix_lower}-component {{
