@@ -2,15 +2,8 @@
 
 mod imp;
 
-use crate::util::SRGBA;
 use cascade::cascade;
-use gtk4::{
-    gdk_pixbuf::{Colorspace, Pixbuf},
-    glib,
-    prelude::*,
-    subclass::prelude::*,
-    Box, Button, FileChooserNative, Window,
-};
+use gtk4::{glib, prelude::*, subclass::prelude::*, Button, FileChooserNative, Window};
 
 glib::wrapper! {
     pub struct FileButton(ObjectSubclass<imp::FileButton>)

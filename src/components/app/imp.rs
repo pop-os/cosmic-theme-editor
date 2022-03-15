@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-use gtk4::{gio, glib, subclass::prelude::*, Entry};
+use gtk4::{glib, subclass::prelude::*};
 use std::cell::Cell;
 
 use crate::components::ThemeEditor;

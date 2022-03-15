@@ -16,8 +16,8 @@ pub fn hex_from_rgba(rgba: &Srgba) -> String {
     let hex = encode::<[u8; 4]>(Srgba::into_raw(rgba.into_format()));
     format!("#{hex}")
 }
-use kmeans_colors::{get_kmeans_hamerly, Calculate, Hamerly, Kmeans, MapColor, Sort};
-use palette::{FromColor, IntoColor, Lab, Srgb};
+use kmeans_colors::{get_kmeans_hamerly, Kmeans, Sort};
+use palette::{IntoColor, Lab, Srgb};
 
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 pub struct SRGBA(pub Srgba);

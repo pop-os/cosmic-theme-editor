@@ -2,18 +2,18 @@
 
 use crate::{
     components::FileButton,
-    model::{Selection, Theme, ThemeDerivation},
+    model::ThemeDerivation,
     util::{self, SRGBA},
 };
 use cascade::cascade;
 use gtk4::{
-    gdk::{self, RGBA},
+    gdk::{self},
     gio::File,
     glib::{self, closure_local},
     prelude::*,
     subclass::prelude::*,
     Box, Button, ColorButton, CssProvider, Entry, Label, MessageDialog, Orientation,
-    ScrolledWindow, Separator, StyleContext, Switch, ToggleButton, Window,
+    ScrolledWindow, Separator, StyleContext, Switch, Window,
 };
 use relm4_macros::view;
 use std::fmt::Display;
@@ -389,7 +389,7 @@ impl ThemeEditor {
         imp.file_button.get().unwrap().connect_closure(
             "image-selected",
             false,
-            closure_local!(@weak-allow-none imp.selection as selection, @weak-allow-none self as self_ => move |file_button: FileButton, f: File| {
+            closure_local!(@weak-allow-none imp.selection as selection, @weak-allow-none self as self_ => move |_file_button: FileButton, f: File| {
                 if let Some(Ok(s)) = util::palette_from_image(f).map(|f| f.try_into()) {
                     selection.unwrap().set(s);
                     self_.unwrap().update_color_buttons();

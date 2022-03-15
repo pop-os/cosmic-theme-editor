@@ -43,12 +43,12 @@ impl AsCss for Container {
             disabled_text,
         } = container_component;
 
-        let prefix_lower = match self.prefix {
+        let prefix_lower = match prefix {
             ContainerType::Background => "background",
             ContainerType::Primary => "primary-container",
             ContainerType::Secondary => "secondary-container",
         };
-        let top_level_border_radius = if self.prefix != ContainerType::Background {
+        let top_level_border_radius = if prefix != &ContainerType::Background {
             "border-radius: 8px;"
         } else {
             ""

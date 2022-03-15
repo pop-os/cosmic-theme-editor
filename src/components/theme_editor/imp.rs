@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-use gtk4::{gio, glib, subclass::prelude::*, Button, ColorButton, Entry, Switch};
+use gtk4::{glib, subclass::prelude::*, Button, ColorButton, Entry, Switch};
 use once_cell::sync::OnceCell;
 use std::{cell::Cell, rc::Rc};
 
