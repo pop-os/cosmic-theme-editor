@@ -565,7 +565,7 @@ impl ThemeEditor {
                     dbg!(new_theme);
                     theme.set(new_theme);
                     let preview_css = theme.get().as_css();
-                    dbg!(&preview_css);
+                    println!("{}", &preview_css);
 
                     let provider = CssProvider::new();
                     provider.load_from_data(preview_css.as_bytes());

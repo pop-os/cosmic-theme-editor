@@ -6,11 +6,95 @@ use std::fmt;
 
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 pub struct ContainerDerivation {
+    pub prefix: Container,
     pub container: SRGBA,
     pub container_component: Widget,
     pub container_divider: SRGBA,
     pub container_text: SRGBA,
     pub container_text_opacity_80: SRGBA,
+}
+
+pub trait AsCss {
+    fn as_css(&self) -> String;
+}
+
+impl AsCss for ContainerDerivation {
+    fn as_css(&self) -> String {
+        let Self {
+            prefix,
+            container,
+            container_component,
+            container_divider,
+            container_text,
+            container_text_opacity_80,
+        } = self;
+        let Widget {
+            default,
+            hover,
+            pressed,
+            focused,
+            divider,
+            text,
+            // XXX this should ideally maintain AAA contrast, and failing that, color chooser should raise warnings
+            text_opacity_80,
+            // these are transparent but are not required to maintain contrast
+            disabled,
+            disabled_text,
+        } = container_component;
+
+        let prefix_lower = match self.prefix {
+            Container::Background => "background",
+            Container::Primary => "primary-container",
+            Container::Secondary => "secondary-container",
+        };
+        format!(
+            r#"/* {prefix_lower} CSS */
+*.{prefix_lower} {{
+  background-color: {container};
+  color: {container_text};
+  border-radius: 8px;
+}}
+
+*.{prefix_lower}-component {{
+  background-color: {default};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.{prefix_lower}-component:hover {{
+  background-color: {hover};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.{prefix_lower}-component:focus {{
+  background-color: {focused};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.{prefix_lower}-component:active {{
+  background-color: {pressed};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.{prefix_lower}-component:disabled {{
+  background-color: {disabled};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.{prefix_lower}-divider {{
+  background-color: {container_divider};
+}}
+
+*.{prefix_lower}-divider {{
+  background-color: {divider};
+}}
+"#
+        )
+    }
 }
 
 // TODO use for descriptive error messages below...
@@ -19,6 +103,12 @@ pub enum Container {
     Background,
     Primary,
     Secondary,
+}
+
+impl Default for Container {
+    fn default() -> Self {
+        Self::Background
+    }
 }
 
 impl fmt::Display for Container {
@@ -101,6 +191,7 @@ impl<T: ColorPicker> TryFrom<(Selection, ThemeConstraints, T, Container)> for Co
         };
 
         Ok(Self {
+            prefix: container_type,
             container,
             container_divider,
             container_text,
@@ -195,19 +286,17 @@ impl<T: ColorPicker> TryFrom<(SRGBA, ThemeConstraints, T)> for Widget {
             alpha: default.alpha,
         };
 
-        let hover = lch;
-        if lighten {
-            hover.lighten(0.1);
+        let hover = if lighten {
+            lch.lighten(0.1)
         } else {
-            hover.darken(0.1);
-        }
+            lch.darken(0.1)
+        };
 
-        let pressed = hover;
-        if lighten {
-            pressed.lighten(0.1);
+        let pressed = if lighten {
+            hover.lighten(0.1)
         } else {
-            pressed.darken(0.1);
-        }
+            hover.darken(0.1)
+        };
         let pressed = SRGBA(Srgba {
             color: pressed.color.into_color(),
             alpha: pressed.alpha,
