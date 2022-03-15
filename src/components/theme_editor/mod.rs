@@ -109,11 +109,6 @@ impl ThemeEditor {
 
                         set_child = Some(&Label) {
                             set_text: "Save",
-                            set_margin_top: 4,
-                            set_margin_bottom: 4,
-                            set_margin_start: 4,
-                            set_margin_end: 4,
-                            add_css_class: "background-component-text",
                         }
                     },
 
@@ -126,20 +121,10 @@ impl ThemeEditor {
 
                         set_child = Some(&Label) {
                             set_text: "Preview",
-                            set_margin_top: 4,
-                            set_margin_bottom: 4,
-                            set_margin_start: 4,
-                            set_margin_end: 4,
                         }
                     },
 
-                    append: file_button = &FileButton {
-                        set_margin_top: 4,
-                        set_margin_bottom: 4,
-                        set_margin_start: 4,
-                        set_margin_end: 4,
-                        add_css_class: "background-component",
-                    },
+                    append: file_button = &FileButton {},
                 },
 
 

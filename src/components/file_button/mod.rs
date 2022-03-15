@@ -26,13 +26,23 @@ impl Default for FileButton {
 
 impl FileButton {
     pub fn new() -> Self {
-        let self_ = glib::Object::new(&[]).expect("Failed to create `FileButton`.");
-        let imp = imp::FileButton::from_instance(&self_);
-
         let button = cascade! {
             Button::with_label("Load from Image");
+            ..add_css_class("background-component");
         };
-        self_.append(&button);
+
+        let self_: Self = glib::Object::new(&[]).expect("Failed to create `FileButton`.");
+        cascade! {
+            &self_;
+            ..append(&button);
+            ..add_css_class("background");
+            ..set_margin_top(4);
+            ..set_margin_bottom(4);
+            ..set_margin_start(4);
+            ..set_margin_end(4);
+
+        };
+        let imp = imp::FileButton::from_instance(&self_);
 
         let window = self_
             .root()

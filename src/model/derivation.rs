@@ -59,31 +59,36 @@ impl AsCss for ContainerDerivation {
   background-color: {default};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
 *.{prefix_lower}-component:hover {{
   background-color: {hover};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
-*.{prefix_lower}-component:focus {{
+*.{prefix_lower}-component:selected {{
   background-color: {focused};
   outline-color: {default};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
 *.{prefix_lower}-component:active {{
   background-color: {pressed};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
 *.{prefix_lower}-component:disabled {{
   background-color: {disabled};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
 *.{prefix_lower}-divider {{
@@ -265,31 +270,36 @@ impl AsCss for AccentDerivation {
   background-color: {default};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
 *.suggested-action:hover {{
   background-color: {hover};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
-*.suggested-action:focus {{
+*.suggested-action:selected {{
   background-color: {focused};
   outline-color: {default};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
 *.suggested-action:active {{
   background-color: {pressed};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
 *.suggested-action:disabled {{
   background-color: {disabled};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
 "#
@@ -335,31 +345,36 @@ impl AsCss for DestructiveDerivation {
   background-color: {default};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
 *.destructive-action:hover {{
   background-color: {hover};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
-*.destructive-action:focus {{
+*.destructive-action:seleceted {{
   background-color: {focused};
   outline-color: {default};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
 *.destructive-action:active {{
   background-color: {pressed};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
 *.destructive-action:disabled {{
   background-color: {disabled};
   color: {text};
   border-radius: 8px;
+  border-color: {default};
 }}
 
 "#
