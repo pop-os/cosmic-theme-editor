@@ -1,14 +1,23 @@
-use std::fmt::Display;
-
 // SPDX-License-Identifier: GPL-3.0-only
-use crate::{model::Theme, util::SRGBA};
+
+use crate::{
+    components::FileButton,
+    model::{Selection, Theme},
+    util::{self, SRGBA},
+};
 use cascade::cascade;
 use gtk4::{
-    gdk, gio, glib, prelude::*, subclass::prelude::*, Box, Button, ColorButton, CssProvider, Entry,
-    Label, MessageDialog, Orientation, ScrolledWindow, Separator, StyleContext, ToggleButton,
-    Window,
+    gdk::{self, RGBA},
+    gio::File,
+    glib::{self, closure_local},
+    prelude::*,
+    subclass::prelude::*,
+    Box, Button, ColorButton, CssProvider, Entry, Label, MessageDialog, Orientation,
+    ScrolledWindow, Separator, StyleContext, ToggleButton, Window,
 };
 use relm4_macros::view;
+use std::fmt::Display;
+use std::{borrow::Borrow, convert::TryFrom};
 mod imp;
 
 glib::wrapper! {
@@ -121,11 +130,20 @@ impl ThemeEditor {
                             set_margin_bottom: 4,
                             set_margin_start: 4,
                             set_margin_end: 4,
-                            add_css_class: "background-component-text",
                         }
+                    },
+
+                    append: file_button = &FileButton {
+                        set_margin_top: 4,
+                        set_margin_bottom: 4,
+                        set_margin_start: 4,
+                        set_margin_end: 4,
+                        add_css_class: "background-component",
                     },
                 },
 
+
+                // PREVIEW
                 append: separator = &Separator {
                     set_orientation: Orientation::Horizontal,
                     set_margin_top: 8,
@@ -337,6 +355,7 @@ impl ThemeEditor {
         imp.name.set(name).unwrap();
         imp.save.set(save_button).unwrap();
         imp.preview.set(preview_button).unwrap();
+        imp.file_button.set(file_button).unwrap();
 
         imp.lighten_elevated_surfaces
             .set(lighten_elevated_surfaces)
@@ -363,8 +382,56 @@ impl ThemeEditor {
         self_.connect_color_buttons();
         self_.connect_control_buttons();
         self_.connect_toggle();
+        self_.connect_file_button();
 
         self_
+    }
+
+    fn connect_file_button(&self) {
+        let imp = imp::ThemeEditor::from_instance(&self);
+        imp.file_button.get().unwrap().connect_closure(
+            "image-selected",
+            false,
+            closure_local!(@weak-allow-none imp.selection as selection, @weak-allow-none self as self_ => move |file_button: FileButton, f: File| {
+                if let Some(Ok(s)) = util::palette_from_image(f).map(|f| f.try_into()) {
+                    selection.unwrap().set(s);
+                    self_.unwrap().update_color_buttons();
+                }
+            }),
+        );
+    }
+
+    fn update_color_buttons(&self) {
+        let imp = imp::ThemeEditor::from_instance(&self);
+        let selection = imp.selection.get();
+        imp.background_color_button
+            .get()
+            .unwrap()
+            .set_rgba(&selection.background.into());
+        imp.primary_color_button
+            .get()
+            .unwrap()
+            .set_rgba(&selection.primary_container.into());
+        imp.secondary_color_button
+            .get()
+            .unwrap()
+            .set_rgba(&selection.secondary_container.into());
+        imp.accent_color_button
+            .get()
+            .unwrap()
+            .set_rgba(&selection.accent.into());
+        imp.accent_text_color_button
+            .get()
+            .unwrap()
+            .set_rgba(&selection.accent_text.unwrap_or_default().into());
+        imp.accent_nav_handle_text_color_button
+            .get()
+            .unwrap()
+            .set_rgba(&selection.accent_nav_handle_text.unwrap_or_default().into());
+        imp.destructive_color_button
+            .get()
+            .unwrap()
+            .set_rgba(&selection.destructive.into());
     }
 
     fn connect_toggle(&self) {
@@ -498,7 +565,7 @@ impl ThemeEditor {
                     dbg!(new_theme);
                     theme.set(new_theme);
                     let preview_css = theme.get().as_css();
-                    dbg!(&preview_css);
+                    println!("{}", &preview_css);
 
                     let provider = CssProvider::new();
                     provider.load_from_data(preview_css.as_bytes());

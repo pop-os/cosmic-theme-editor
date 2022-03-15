@@ -16,3 +16,4 @@ tokio = { version = "1.17.0", features = ["full"] }
 cascade = "1.0.0"
 float-cmp = "0.9.0"
 hex = "0.4.3"
+kmeans_colors = { git = "https://github.com/okaneco/kmeans-colors", features = ["palette_color"], default-features = false }

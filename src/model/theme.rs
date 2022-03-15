@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 use super::{
-    AccentDerivation, ContainerDerivation, DestructiveDerivation, Selection, ThemeConstraints,
+    AccentDerivation, AsCss, ContainerDerivation, DestructiveDerivation, Selection,
+    ThemeConstraints,
 };
 use crate::{
     color_picker::{ColorPicker, Exact},
@@ -34,203 +35,21 @@ impl Theme {
         } = self;
         let mut css = String::new();
 
-        {
-            let ContainerDerivation {
-                container,
-                container_component,
-                container_divider,
-                container_text,
-                container_text_opacity_80,
-            } = background;
+        css.push_str(&background.as_css());
+        css.push_str(&primary.as_css());
+        css.push_str(&secondary.as_css());
+        css.push_str(&accent.as_css());
+        css.push_str(&destructive.as_css());
+        let accent = accent.accent;
+        css.push_str(&format!(
+            r#"/* Accent CSS */
+* {{
+  background-image: none;
+  outline-color: {accent};
+}}
 
-            let Widget {
-                default,
-                hover,
-                pressed,
-                focused,
-                divider,
-                text,
-                // XXX this should ideally maintain AAA contrast, and failing that, color chooser should raise warnings
-                text_opacity_80,
-                // these are transparent but are not required to maintain contrast
-                disabled,
-                disabled_text,
-            } = container_component;
-
-            css.push_str(&format!(
-                r#"/* Background CSS */
-            .background {{
-            background-color: {container};
-            color: {container_text};
-            }}
-
-            .background-component {{
-            background-color: {default};
-            color: {text};
-            }}
-
-            .background-divider {{
-            background-color: {container_divider};
-            }}
-            .background-componenent-divider {{
-            background-color: {divider};
-            }}
 "#
-            ));
-        }
-
-        {
-            let ContainerDerivation {
-                container,
-                container_component,
-                container_divider,
-                container_text,
-                container_text_opacity_80,
-            } = primary;
-
-            let Widget {
-                default,
-                hover,
-                pressed,
-                focused,
-                divider,
-                text,
-                // XXX this should ideally maintain AAA contrast, and failing that, color chooser should raise warnings
-                text_opacity_80,
-                // these are transparent but are not required to maintain contrast
-                disabled,
-                disabled_text,
-            } = container_component;
-            css.push_str(&format!(
-                r#"/* Primary Container CSS */
-            .primary-container {{
-            background-color: {container};
-            color: {container_text};
-            }}
-
-            .primary-container-component {{
-            background-color: {default};
-            color: {text};
-            }}
-
-            .primary-container-divider {{
-            background-color: {container_divider};
-            }}
-
-            .primary-componenent-divider {{
-            background-color: {divider};
-            }}
-"#
-            ));
-        }
-
-        {
-            let ContainerDerivation {
-                container,
-                container_component,
-                container_divider,
-                container_text,
-                container_text_opacity_80,
-            } = secondary;
-
-            let Widget {
-                default,
-                hover,
-                pressed,
-                focused,
-                divider,
-                text,
-                // XXX this should ideally maintain AAA contrast, and failing that, color chooser should raise warnings
-                text_opacity_80,
-                // these are transparent but are not required to maintain contrast
-                disabled,
-                disabled_text,
-            } = container_component;
-            css.push_str(&format!(
-                r#"/* Secondary Container CSS */
-            .secondary-container {{
-            background-color: {container};
-            color: {container_text};
-            }}
-
-            .secondary-container-component {{
-            background-color: {default};
-            color: {text};
-            }}
-
-            .secondary-container-divider {{
-            background-color: {container_divider};
-            }}
-
-            .secondary-componenent-divider {{
-            background-color: {divider};
-            }}
-"#
-            ));
-        }
-
-        {
-            let AccentDerivation {
-                accent,
-                accent_text,
-                accent_nav_handle_text,
-                suggested,
-            } = accent;
-
-            let Widget {
-                default,
-                hover,
-                pressed,
-                focused,
-                divider,
-                text,
-                // XXX this should ideally maintain AAA contrast, and failing that, color chooser should raise warnings
-                text_opacity_80,
-                // these are transparent but are not required to maintain contrast
-                disabled,
-                disabled_text,
-            } = suggested;
-
-            css.push_str(&format!(
-                r#"/* Accent CSS */
-            * {{
-            background-image: none;
-            outline-color: {accent};
-            }}
-
-            button.suggested-action {{
-            background-color: {default};
-            color: {text};
-            }}
-"#
-            ))
-        }
-
-        {
-            let DestructiveDerivation { destructive } = destructive;
-            let Widget {
-                default,
-                hover,
-                pressed,
-                focused,
-                divider,
-                text,
-                text_opacity_80,
-                disabled,
-                disabled_text,
-            } = destructive;
-
-            css.push_str(&format!(
-                r#"
-            button.destructive-action {{
-            background-color: {default};
-            outline-color: {default};
-            color: {text};
-            }}
-"#
-            ));
-        }
-
+        ));
         css
     }
 }
