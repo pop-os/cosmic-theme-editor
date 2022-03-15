@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-use gtk4::{gio, glib, subclass::prelude::*, Button, ColorButton, Entry, ToggleButton};
+use gtk4::{gio, glib, subclass::prelude::*, Button, ColorButton, Entry, Switch};
 use once_cell::sync::OnceCell;
 use std::{cell::Cell, rc::Rc};
 
@@ -16,7 +16,7 @@ pub struct ThemeEditor {
     pub save: OnceCell<Button>,
     pub preview: OnceCell<Button>,
     pub file_button: OnceCell<FileButton>,
-    pub lighten_elevated_surfaces: OnceCell<ToggleButton>,
+    pub lighten_elevated_surfaces: OnceCell<Switch>,
     pub background_color_button: OnceCell<ColorButton>,
     pub primary_color_button: OnceCell<ColorButton>,
     pub secondary_color_button: OnceCell<ColorButton>,

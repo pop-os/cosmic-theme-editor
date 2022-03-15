@@ -14,6 +14,7 @@ pub struct Container {
     pub container_text_opacity_80: SRGBA,
 }
 
+// TODO special styling for switches in gtk4
 pub trait AsCss {
     fn as_css(&self) -> String;
 }
@@ -109,7 +110,6 @@ impl AsCss for Container {
     }
 }
 
-// TODO use for descriptive error messages below...
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum ContainerType {
     Background,

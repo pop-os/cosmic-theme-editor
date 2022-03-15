@@ -13,11 +13,10 @@ use gtk4::{
     prelude::*,
     subclass::prelude::*,
     Box, Button, ColorButton, CssProvider, Entry, Label, MessageDialog, Orientation,
-    ScrolledWindow, Separator, StyleContext, ToggleButton, Window,
+    ScrolledWindow, Separator, StyleContext, Switch, ToggleButton, Window,
 };
 use relm4_macros::view;
 use std::fmt::Display;
-use std::{borrow::Borrow, convert::TryFrom};
 mod imp;
 
 glib::wrapper! {
@@ -41,8 +40,6 @@ impl ThemeEditor {
         cascade! {
             &self_;
             ..set_orientation(Orientation::Vertical);
-            ..set_hexpand(true);
-            ..set_vexpand(true);
         };
 
         let (background_color_box, background_color_button) =
@@ -59,16 +56,6 @@ impl ThemeEditor {
         let (destructive_color_box, destructive_color_button) =
             Self::get_color_button("Destructive Color");
 
-        let lighten_elevated_surfaces = cascade! {
-            ToggleButton::with_label("Lighten Elevated Surfaces");
-            ..set_active(imp.constraints.get().lighten);
-            ..set_margin_top(4);
-            ..set_margin_bottom(4);
-            ..set_margin_start(4);
-            ..set_margin_end(4);
-            ..add_css_class("background-component");
-        };
-
         view! {
             inner = Box {
                 set_orientation: Orientation::Vertical,
@@ -80,10 +67,35 @@ impl ThemeEditor {
 
                 append: name = &Entry {
                     set_placeholder_text: Some("Theme Name"),
+                    set_margin_top: 4,
+                    set_margin_bottom: 4,
+                    set_margin_start: 4,
+                    set_margin_end: 4,
+
                     set_width_request: 160,
                 },
 
-                append: &lighten_elevated_surfaces,
+                append = &Box {
+                    set_orientation: Orientation::Horizontal,
+                    set_spacing: 4,
+                    set_margin_top: 4,
+                    set_margin_bottom: 4,
+                    set_margin_start: 4,
+                    set_margin_end: 4,
+
+                    append: lighten_elevated_surfaces = &Switch {
+                        set_active: imp.constraints.get().lighten,
+                        set_margin_top: 4,
+                        set_margin_bottom: 4,
+                        set_margin_start: 4,
+                        set_margin_end: 4,
+                    },
+
+                    append = &Label {
+                        set_text: "Lighten Elevated Surfaces",
+                    }
+                },
+
                 append: &background_color_box,
                 append: &primary_color_box,
                 append: &secondary_color_box,
@@ -426,7 +438,7 @@ impl ThemeEditor {
         imp.lighten_elevated_surfaces
             .get()
             .unwrap()
-            .connect_toggled(glib::clone!(@weak constraints => move |toggle| {
+            .connect_activate(glib::clone!(@weak constraints => move |toggle| {
                 let mut c = constraints.get();
                 c.lighten = toggle.is_active();
                 constraints.set(c);
@@ -584,6 +596,13 @@ impl ThemeEditor {
             .buttons(gtk4::ButtonsType::Close)
             .text(&format!("{}", msg))
             .build();
+        cascade! {
+            msg_dialog.message_area();
+            ..set_margin_top(8);
+            ..set_margin_bottom(8);
+            ..set_margin_start(8);
+            ..set_margin_end(8);
+        };
         let _ = msg_dialog.run_future().await;
         msg_dialog.close();
     }
