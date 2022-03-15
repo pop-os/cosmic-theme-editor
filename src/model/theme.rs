@@ -38,69 +38,18 @@ impl Theme {
         css.push_str(&background.as_css());
         css.push_str(&primary.as_css());
         css.push_str(&secondary.as_css());
-
-        {
-            let AccentDerivation {
-                accent,
-                accent_text,
-                accent_nav_handle_text,
-                suggested,
-            } = accent;
-
-            let Widget {
-                default,
-                hover,
-                pressed,
-                focused,
-                divider,
-                text,
-                // XXX this should ideally maintain AAA contrast, and failing that, color chooser should raise warnings
-                text_opacity_80,
-                // these are transparent but are not required to maintain contrast
-                disabled,
-                disabled_text,
-            } = suggested;
-
-            css.push_str(&format!(
-                r#"/* Accent CSS */
+        css.push_str(&accent.as_css());
+        css.push_str(&destructive.as_css());
+        let accent = accent.accent;
+        css.push_str(&format!(
+            r#"/* Accent CSS */
 * {{
   background-image: none;
   outline-color: {accent};
 }}
 
-button.suggested-action {{
-  background-color: {default};
-  color: {text};
-}}
 "#
-            ))
-        }
-
-        {
-            let DestructiveDerivation { destructive } = destructive;
-            let Widget {
-                default,
-                hover,
-                pressed,
-                focused,
-                divider,
-                text,
-                text_opacity_80,
-                disabled,
-                disabled_text,
-            } = destructive;
-
-            css.push_str(&format!(
-                r#"
-button.destructive-action {{
-  background-color: {default};
-  outline-color: {default};
-  color: {text};
-}}
-"#
-            ));
-        }
-
+        ));
         css
     }
 }

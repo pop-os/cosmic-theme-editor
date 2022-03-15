@@ -69,6 +69,7 @@ impl AsCss for ContainerDerivation {
 
 *.{prefix_lower}-component:focus {{
   background-color: {focused};
+  outline-color: {default};
   color: {text};
   border-radius: 8px;
 }}
@@ -235,6 +236,67 @@ impl<T: ColorPicker> TryFrom<(Selection, ThemeConstraints, T)> for AccentDerivat
     }
 }
 
+impl AsCss for AccentDerivation {
+    fn as_css(&self) -> String {
+        let AccentDerivation {
+            accent,
+            accent_text,
+            accent_nav_handle_text,
+            suggested,
+        } = self;
+
+        let Widget {
+            default,
+            hover,
+            pressed,
+            focused,
+            divider,
+            text,
+            // XXX this should ideally maintain AAA contrast, and failing that, color chooser should raise warnings
+            text_opacity_80,
+            // these are transparent but are not required to maintain contrast
+            disabled,
+            disabled_text,
+        } = suggested;
+
+        format!(
+            r#"/* Suggested CSS */
+*.suggested-action {{
+  background-color: {default};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.suggested-action:hover {{
+  background-color: {hover};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.suggested-action:focus {{
+  background-color: {focused};
+  outline-color: {default};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.suggested-action:active {{
+  background-color: {pressed};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.suggested-action:disabled {{
+  background-color: {disabled};
+  color: {text};
+  border-radius: 8px;
+}}
+
+"#
+        )
+    }
+}
+
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 pub struct DestructiveDerivation {
     pub destructive: Widget,
@@ -249,6 +311,59 @@ impl<T: ColorPicker> TryFrom<(Selection, ThemeConstraints, T)> for DestructiveDe
         Ok(Self {
             destructive: (selection.destructive, constraints, picker).try_into()?,
         })
+    }
+}
+
+impl AsCss for DestructiveDerivation {
+    fn as_css(&self) -> String {
+        let DestructiveDerivation { destructive } = &self;
+        let Widget {
+            default,
+            hover,
+            pressed,
+            focused,
+            divider,
+            text,
+            text_opacity_80,
+            disabled,
+            disabled_text,
+        } = destructive;
+
+        format!(
+            r#"/* Destructive CSS */
+*.destructive-action {{
+  background-color: {default};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.destructive-action:hover {{
+  background-color: {hover};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.destructive-action:focus {{
+  background-color: {focused};
+  outline-color: {default};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.destructive-action:active {{
+  background-color: {pressed};
+  color: {text};
+  border-radius: 8px;
+}}
+
+*.destructive-action:disabled {{
+  background-color: {disabled};
+  color: {text};
+  border-radius: 8px;
+}}
+
+"#
+        )
     }
 }
 
