@@ -1,22 +1,21 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 use super::{
-    AccentDerivation, AsCss, ContainerDerivation, DestructiveDerivation, Selection,
-    ThemeConstraints,
+    Accent, AccentDerivation, AsCss, Container, ContainerDerivation, ContainerType, Destructive,
+    DestructiveDerivation, Selection, ThemeConstraints,
 };
 use crate::{
     color_picker::{ColorPicker, Exact},
-    model::{Container, Widget},
     util::SRGBA,
 };
 
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
 pub struct Theme {
-    background: ContainerDerivation,
-    primary: ContainerDerivation,
-    secondary: ContainerDerivation,
-    accent: AccentDerivation,
-    destructive: DestructiveDerivation,
+    background: Container,
+    primary: Container,
+    secondary: Container,
+    accent: Accent,
+    destructive: Destructive,
 
     // TODO derived surface colors which don't fit neatly in a category
     window_header_background: SRGBA,
@@ -54,36 +53,58 @@ impl Theme {
     }
 }
 
-impl TryFrom<(Selection, ThemeConstraints)> for Theme {
-    type Error = anyhow::Error;
+pub struct ThemeDerivation {
+    pub theme: Theme,
+    pub errors: Vec<anyhow::Error>,
+}
 
-    fn try_from(
-        (selection, constraints): (Selection, ThemeConstraints),
-    ) -> Result<Self, Self::Error> {
+impl From<(Selection, ThemeConstraints)> for ThemeDerivation {
+    fn from((selection, constraints): (Selection, ThemeConstraints)) -> Self {
         let picker = Exact::default();
+        let mut theme_errors = Vec::new();
         let window_header_background = selection.background;
-        let text_button_text = match picker.pick_color(
-            selection.background,
-            constraints.text_contrast_ratio,
-            true,
-            None,
-        ) {
-            Ok(c) => c,
-            Err(e) => {
-                anyhow::bail!(
-                    "Failed to derive text button text color from the selected background color."
-                )
-            }
+        let (text_button_text, err) = picker.pick_color_text(selection.background, true, None);
+        if let Some(err) = err {
+            theme_errors.push(err)
         };
+        let ContainerDerivation {
+            container: background,
+            errors: mut errs,
+        } = (selection, constraints, picker, ContainerType::Background).into();
+        theme_errors.append(&mut errs);
 
-        Ok(Self {
-            background: (selection, constraints, picker, Container::Background).try_into()?,
-            primary: (selection, constraints, picker, Container::Primary).try_into()?,
-            secondary: (selection, constraints, picker, Container::Secondary).try_into()?,
-            accent: (selection, constraints, picker).try_into()?,
-            destructive: (selection, constraints, picker).try_into()?,
-            window_header_background,
-            text_button_text,
-        })
+        let ContainerDerivation {
+            container: primary,
+            errors: mut errs,
+        } = (selection, constraints, picker, ContainerType::Primary).into();
+        theme_errors.append(&mut errs);
+
+        let ContainerDerivation {
+            container: secondary,
+            mut errors,
+        } = (selection, constraints, picker, ContainerType::Secondary).into();
+        theme_errors.append(&mut errors);
+
+        let AccentDerivation { accent, mut errors } = (selection, constraints, picker).into();
+        theme_errors.append(&mut errors);
+
+        let DestructiveDerivation {
+            destructive,
+            mut errors,
+        } = (selection, constraints, picker).into();
+        theme_errors.append(&mut errors);
+
+        Self {
+            theme: Theme {
+                background,
+                primary,
+                secondary,
+                accent,
+                destructive,
+                window_header_background,
+                text_button_text,
+            },
+            errors: theme_errors,
+        }
     }
 }

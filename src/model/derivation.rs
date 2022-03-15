@@ -1,12 +1,12 @@
 use super::{Selection, ThemeConstraints};
 use crate::{color_picker::ColorPicker, util::SRGBA};
-use anyhow::bail;
+use anyhow::anyhow;
 use palette::{IntoColor, Lcha, Shade, Srgba};
 use std::fmt;
 
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
-pub struct ContainerDerivation {
-    pub prefix: Container,
+pub struct Container {
+    pub prefix: ContainerType,
     pub container: SRGBA,
     pub container_component: Widget,
     pub container_divider: SRGBA,
@@ -18,7 +18,7 @@ pub trait AsCss {
     fn as_css(&self) -> String;
 }
 
-impl AsCss for ContainerDerivation {
+impl AsCss for Container {
     fn as_css(&self) -> String {
         let Self {
             prefix,
@@ -43,9 +43,9 @@ impl AsCss for ContainerDerivation {
         } = container_component;
 
         let prefix_lower = match self.prefix {
-            Container::Background => "background",
-            Container::Primary => "primary-container",
-            Container::Secondary => "secondary-container",
+            ContainerType::Background => "background",
+            ContainerType::Primary => "primary-container",
+            ContainerType::Secondary => "secondary-container",
         };
         format!(
             r#"/* {prefix_lower} CSS */
@@ -105,39 +105,45 @@ impl AsCss for ContainerDerivation {
 
 // TODO use for descriptive error messages below...
 #[derive(Copy, Clone, PartialEq, Debug)]
-pub enum Container {
+pub enum ContainerType {
     Background,
     Primary,
     Secondary,
 }
 
-impl Default for Container {
+impl Default for ContainerType {
     fn default() -> Self {
         Self::Background
     }
 }
 
-impl fmt::Display for Container {
+impl fmt::Display for ContainerType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Container::Background => write!(f, "Background"),
-            Container::Primary => write!(f, "Primary Container"),
-            Container::Secondary => write!(f, "Secondary Container"),
+            ContainerType::Background => write!(f, "Background"),
+            ContainerType::Primary => write!(f, "Primary Container"),
+            ContainerType::Secondary => write!(f, "Secondary Container"),
         }
     }
 }
 
-impl<T: ColorPicker> TryFrom<(Selection, ThemeConstraints, T, Container)> for ContainerDerivation {
-    type Error = anyhow::Error;
+#[derive(Debug)]
+pub struct ContainerDerivation {
+    pub container: Container,
+    pub errors: Vec<anyhow::Error>,
+}
 
-    fn try_from(
+impl<T: ColorPicker> From<(Selection, ThemeConstraints, T, ContainerType)> for ContainerDerivation {
+    fn from(
         (selection, constraints, picker, container_type): (
             Selection,
             ThemeConstraints,
             T,
-            Container,
+            ContainerType,
         ),
-    ) -> Result<Self, Self::Error> {
+    ) -> Self {
+        let mut errors = Vec::new();
+
         let Selection {
             background,
             primary_container,
@@ -154,96 +160,117 @@ impl<T: ColorPicker> TryFrom<(Selection, ThemeConstraints, T, Container)> for Co
         } = constraints;
 
         let container = match container_type {
-            Container::Background => background,
-            Container::Primary => primary_container,
-            Container::Secondary => secondary_container,
+            ContainerType::Background => background,
+            ContainerType::Primary => primary_container,
+            ContainerType::Secondary => secondary_container,
         };
-        let container_divider = match picker.pick_color(
+        let (container_divider, err) = picker.pick_color_graphic(
             container,
             divider_contrast_ratio,
             divider_gray_scale,
             Some(lighten),
-        ) {
-            Ok(c) => c,
-            Err(e) => bail!("{} => \"container divider\" failed: {}", container_type, e),
+        );
+        if let Some(e) = err {
+            errors.push(e);
         };
 
-        let container_text = match picker.pick_color(container, text_contrast_ratio, true, None) {
-            Ok(c) => c,
-            Err(e) => bail!("{} => \"container text\" failed: {}", container_type, e),
+        let (container_text, err) = picker.pick_color_text(container, true, None);
+        if let Some(err) = err {
+            let err = anyhow!("{} => \"container text\" failed: {}", container_type, err);
+            errors.push(err);
         };
 
         // TODO revisit this and adjust constraints for transparency
         let mut container_text_opacity_80 = container_text;
         (*container_text_opacity_80).alpha *= 0.8;
 
-        let component_default =
-            match picker.pick_color(container, elevated_contrast_ratio, false, Some(lighten)) {
-                Ok(c) => c,
-                Err(e) => bail!(
-                    "{} => \"container component default\" failed: {}",
-                    container_type,
-                    e
-                ),
-            };
+        let (component_default, err) =
+            picker.pick_color_graphic(container, elevated_contrast_ratio, false, Some(lighten));
+        if let Some(e) = err {
+            let err = anyhow!(
+                "{} => \"container component\" failed: {}",
+                container_type,
+                e
+            );
+            errors.push(err);
+        };
 
-        let container_component = match Widget::try_from((component_default, constraints, picker)) {
-            Ok(c) => c,
-            Err(e) => bail!(
+        let WidgetDerivation {
+            widget: container_component,
+            errors: errs,
+        } = (component_default, constraints, picker).into();
+        for e in errs {
+            let err = anyhow!(
                 "{} => \"container component derivation\" failed: {}",
                 container_type,
                 e
-            ),
-        };
+            );
+            errors.push(err);
+        }
 
-        Ok(Self {
-            prefix: container_type,
-            container,
-            container_divider,
-            container_text,
-            container_text_opacity_80,
-            container_component,
-        })
+        Self {
+            container: Container {
+                prefix: container_type,
+                container,
+                container_divider,
+                container_text,
+                container_text_opacity_80,
+                container_component,
+            },
+            errors,
+        }
     }
 }
 
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
-pub struct AccentDerivation {
+pub struct Accent {
     pub accent: SRGBA,
     pub accent_text: SRGBA,
     pub accent_nav_handle_text: SRGBA,
     pub suggested: Widget,
 }
 
-impl<T: ColorPicker> TryFrom<(Selection, ThemeConstraints, T)> for AccentDerivation {
-    type Error = anyhow::Error;
+#[derive(Debug)]
+pub struct AccentDerivation {
+    pub accent: Accent,
+    pub errors: Vec<anyhow::Error>,
+}
 
-    fn try_from(
-        (selection, constraints, picker): (Selection, ThemeConstraints, T),
-    ) -> Result<Self, Self::Error> {
+impl<T: ColorPicker> From<(Selection, ThemeConstraints, T)> for AccentDerivation {
+    fn from((selection, constraints, picker): (Selection, ThemeConstraints, T)) -> Self {
         let Selection {
             accent,
             accent_text,
             accent_nav_handle_text,
             ..
         } = selection;
+        let mut errors = Vec::<anyhow::Error>::new();
 
-        let suggested = Widget::try_from((accent, constraints, picker))?;
+        let WidgetDerivation {
+            widget: suggested,
+            errors: errs,
+        } = (accent, constraints, picker).into();
+        for e in errs {
+            errors.push(anyhow!("\"Accent component derivation\" failed: {}", e));
+        }
         let accent_text = accent_text.unwrap_or(accent);
         let accent_nav_handle_text = accent_nav_handle_text.unwrap_or(accent);
 
-        Ok(Self {
-            accent,
-            accent_text,
-            accent_nav_handle_text,
-            suggested,
-        })
+        Self {
+            accent: Accent {
+                accent,
+                accent_text,
+                accent_nav_handle_text,
+                suggested,
+            },
+            errors,
+        }
     }
 }
 
-impl AsCss for AccentDerivation {
+impl AsCss for Accent {
     fn as_css(&self) -> String {
-        let AccentDerivation {
+        let Accent {
             accent,
             accent_text,
             accent_nav_handle_text,
@@ -308,25 +335,40 @@ impl AsCss for AccentDerivation {
 }
 
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
-pub struct DestructiveDerivation {
+pub struct Destructive {
     pub destructive: Widget,
 }
 
-impl<T: ColorPicker> TryFrom<(Selection, ThemeConstraints, T)> for DestructiveDerivation {
-    type Error = anyhow::Error;
+#[derive(Debug)]
+pub struct DestructiveDerivation {
+    pub destructive: Destructive,
+    pub errors: Vec<anyhow::Error>,
+}
 
-    fn try_from(
-        (selection, constraints, picker): (Selection, ThemeConstraints, T),
-    ) -> Result<Self, Self::Error> {
-        Ok(Self {
-            destructive: (selection.destructive, constraints, picker).try_into()?,
-        })
+impl<T: ColorPicker> From<(Selection, ThemeConstraints, T)> for DestructiveDerivation {
+    fn from((selection, constraints, picker): (Selection, ThemeConstraints, T)) -> Self {
+        let mut errors = Vec::<anyhow::Error>::new();
+
+        let WidgetDerivation {
+            widget: destructive,
+            errors: errs,
+        } = (selection.destructive, constraints, picker).into();
+        for e in errs {
+            errors.push(anyhow!(
+                "\"Destructive component derivation\" failed: {}",
+                e
+            ));
+        }
+        Self {
+            destructive: Destructive { destructive },
+            errors,
+        }
     }
 }
 
-impl AsCss for DestructiveDerivation {
+impl AsCss for Destructive {
     fn as_css(&self) -> String {
-        let DestructiveDerivation { destructive } = &self;
+        let Destructive { destructive } = &self;
         let Widget {
             default,
             hover,
@@ -397,12 +439,13 @@ pub struct Widget {
     pub disabled_text: SRGBA,
 }
 
-impl<T: ColorPicker> TryFrom<(SRGBA, ThemeConstraints, T)> for Widget {
-    type Error = anyhow::Error;
+pub struct WidgetDerivation {
+    pub widget: Widget,
+    pub errors: Vec<anyhow::Error>,
+}
 
-    fn try_from(
-        (default, constraints, picker): (SRGBA, ThemeConstraints, T),
-    ) -> Result<Self, Self::Error> {
+impl<T: ColorPicker> From<(SRGBA, ThemeConstraints, T)> for WidgetDerivation {
+    fn from((default, constraints, picker): (SRGBA, ThemeConstraints, T)) -> Self {
         let ThemeConstraints {
             divider_contrast_ratio,
             text_contrast_ratio,
@@ -411,11 +454,14 @@ impl<T: ColorPicker> TryFrom<(SRGBA, ThemeConstraints, T)> for Widget {
             ..
         } = constraints;
 
+        let mut errors = Vec::new();
+
         let lch = Lcha {
             color: default.color.into_color(),
             alpha: default.alpha,
         };
 
+        // TODO define constraints for different states...
         let hover = if lighten {
             lch.lighten(0.1)
         } else {
@@ -438,32 +484,43 @@ impl<T: ColorPicker> TryFrom<(SRGBA, ThemeConstraints, T)> for Widget {
         let mut disabled = default;
         (*disabled).alpha = 0.5;
 
-        let divider = picker.pick_color(
+        let (divider, error) = picker.pick_color_graphic(
             pressed,
             divider_contrast_ratio,
             divider_gray_scale,
             Some(lighten),
-        )?;
-        let text = picker.pick_color(pressed, text_contrast_ratio, true, None)?;
+        );
+        if let Some(error) = error {
+            errors.push(error);
+        }
+
+        let (text, error) = picker.pick_color_text(pressed, true, None);
+        if let Some(error) = error {
+            errors.push(error);
+        }
+
         let mut text_opacity_80 = text;
         (*text_opacity_80).alpha = 0.8;
 
         let mut disabled_text = text;
         (*disabled_text).alpha = 0.5;
 
-        Ok(Self {
-            default,
-            hover: SRGBA(Srgba {
-                color: hover.color.into_color(),
-                alpha: hover.alpha,
-            }),
-            pressed,
-            focused,
-            divider,
-            text,
-            text_opacity_80,
-            disabled,
-            disabled_text,
-        })
+        Self {
+            widget: Widget {
+                default,
+                hover: SRGBA(Srgba {
+                    color: hover.color.into_color(),
+                    alpha: hover.alpha,
+                }),
+                pressed,
+                focused,
+                divider,
+                text,
+                text_opacity_80,
+                disabled,
+                disabled_text,
+            },
+            errors,
+        }
     }
 }

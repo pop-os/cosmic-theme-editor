@@ -2,7 +2,7 @@
 
 use crate::{
     components::FileButton,
-    model::{Selection, Theme},
+    model::{Selection, Theme, ThemeDerivation},
     util::{self, SRGBA},
 };
 use cascade::cascade;
@@ -545,8 +545,7 @@ impl ThemeEditor {
         imp.preview.get().unwrap().connect_clicked(
             glib::clone!(@weak selection, @weak theme, @weak constraints, @weak self as parent => move |self_| {
                 println!("generating new theme");
-                let res = Theme::try_from((selection.get(), constraints.get()));
-                if let Ok(new_theme) = res {
+                let ThemeDerivation {theme: new_theme, errors} = (selection.get(), constraints.get()).into();
                     dbg!(new_theme);
                     theme.set(new_theme);
                     let preview_css = theme.get().as_css();
@@ -560,8 +559,8 @@ impl ThemeEditor {
                         gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
                     );
 
-                } else if let Err(err) = res {
-                    eprintln!("failed to create new theme...");
+                if errors.len() > 0 {
+                    eprintln!("Errors while creating new theme...");
                     let window = self_.root().map(|root| {
                         if let Ok(w) = root.downcast::<Window>() {
                             Some(w)
@@ -569,6 +568,7 @@ impl ThemeEditor {
                             None
                         }
                     }).unwrap_or_default();
+                    let err = errors.iter().map(|e| format!("{}", e)).collect::<Vec<String>>().join("\n\n");
                     if let Some(window) = window {
                         glib::MainContext::default().spawn_local(Self::dialog(window, err));
                     }

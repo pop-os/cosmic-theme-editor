@@ -55,7 +55,7 @@ impl FileButton {
             })
             .unwrap_or_default();
 
-        let file_chooser = gtk4::FileChooserNative::new(
+        let file_chooser = FileChooserNative::new(
             Some("Select Image"),
             window.as_ref(),
             gtk4::FileChooserAction::Open,
