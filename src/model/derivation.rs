@@ -48,14 +48,26 @@ impl AsCss for Container {
             ContainerType::Primary => "primary-container",
             ContainerType::Secondary => "secondary-container",
         };
-        let top_level_border_radius = if prefix != &ContainerType::Background {
-            "border-radius: 8px;"
+
+        let mut header_style = String::new();
+        let mut top_level_border_radius = "";
+        if prefix != &ContainerType::Background {
+            top_level_border_radius = "border-radius: 8px;"
         } else {
-            ""
+            let transparent_bg = &mut container.clone();
+            transparent_bg.alpha = 0.2;
+            header_style = format!(
+                r#"/* Window Headerbar CSS */
+.headerbar {{
+  background-color: linear-gradient({container}, transparent_bg);
+}}
+"#
+            );
         };
 
         format!(
-            r#"/* {prefix_lower} CSS */
+            r#"{header_style}
+/* {prefix_lower} CSS */
 *.{prefix_lower} {{
   background-color: {container};
   color: {container_text};
@@ -102,7 +114,7 @@ impl AsCss for Container {
   background-color: {container_divider};
 }}
 
-*.{prefix_lower}-divider {{
+*.{prefix_lower}-component-divider {{
   background-color: {divider};
 }}
 "#
