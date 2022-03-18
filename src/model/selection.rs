@@ -63,8 +63,9 @@ impl TryFrom<Vec<SRGBA>> for Selection {
             let mut reddest_i = 1;
             for (i, c) in lch_colors[1..].iter().enumerate() {
                 let d_cur = (c.hue.to_degrees() - red_lch.hue.to_degrees()).abs();
-                let reddest_d =
-                    (lch_colors[reddest_i].hue.to_degrees() - red_lch.hue.to_degrees()).abs();
+                let reddest_d = (lch_colors[reddest_i].hue.to_degrees().abs()
+                    - red_lch.hue.to_degrees().abs())
+                .abs();
                 if d_cur < reddest_d {
                     reddest_i = i;
                 }
