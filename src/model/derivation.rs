@@ -96,6 +96,23 @@ impl AsCss for Container {
   border-color: {default};
 }}
 
+/* slider and switch are examples of widgets which likely want sass */
+*.{prefix_lower}-component:checked {{
+  background-color: {pressed};
+  outline-color: {default};
+  color: {text};
+  border-radius: 8px;
+  border-color: {default};
+}}
+
+*.{prefix_lower}-component slider {{
+  background-color: {text};
+  outline-color: {default};
+  color: {text};
+  border-radius: 8px;
+  border-color: {default};
+}}
+
 *.{prefix_lower}-component:active {{
   background-color: {pressed};
   color: {text};

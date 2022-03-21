@@ -89,6 +89,7 @@ impl ThemeEditor {
                         set_margin_bottom: 4,
                         set_margin_start: 4,
                         set_margin_end: 4,
+                        add_css_class: "background-component",
                     },
 
                     append = &Label {
