@@ -6,7 +6,7 @@ use crate::{
 };
 
 use cascade::cascade;
-use cosmic_theme::{ColorPicker, Exact, ThemeDerivation};
+use cosmic_theme::{ColorPicker, Exact, GtkOutput, ThemeDerivation};
 use gtk4::{
     gdk::{self},
     gio::File,
@@ -378,12 +378,23 @@ impl ThemeEditor {
             .set(destructive_color_button)
             .unwrap();
 
+        self_.connect_name();
         self_.connect_color_buttons();
         self_.connect_control_buttons();
         self_.connect_toggle();
         self_.connect_file_button();
 
         self_
+    }
+
+    fn connect_name(&self) {
+        let imp = imp::ThemeEditor::from_instance(&self);
+        imp.name.get().unwrap().connect_changed(
+            glib::clone!(@weak imp.theme as theme => move |name| {
+                let name = name.text();
+                theme.borrow_mut().name = String::from(name.as_str());
+            }),
+        );
     }
 
     fn connect_file_button(&self) {
@@ -549,10 +560,21 @@ impl ThemeEditor {
         let constraints = &imp.constraints;
 
         imp.save.get().unwrap().connect_clicked(
-            glib::clone!(@weak selection, @weak theme, @weak constraints => move |_| {
-                // TODO convert theme ron & css file
-                // TODO convert constraints & selection to ron
-                todo!();
+            glib::clone!(@weak selection, @weak theme, @weak constraints => move |save| {
+                if theme.borrow().get_name() != "" {
+                    if let Err(e) = theme.borrow().write() {
+                        let window = save.root().map(|root| {
+                            if let Ok(w) = root.downcast::<Window>() {
+                                Some(w)
+                            } else {
+                                None
+                            }
+                        }).unwrap_or_default();
+                        if let Some(window) = window {
+                            glib::MainContext::default().spawn_local(Self::dialog(window, format!("{}", e)));
+                        }
+
+                    }                }
             }),
         );
 
@@ -561,9 +583,9 @@ impl ThemeEditor {
                 println!("generating new theme");
                 let picker = Exact::new(selection.get(), constraints.get());
                 let ThemeDerivation {theme: new_theme, errors} = picker.theme_derivation();
-                    dbg!(new_theme);
-                    theme.set(new_theme);
-                    let preview_css = theme.get().as_css();
+                    dbg!(&new_theme);
+                    theme.replace(new_theme);
+                    let preview_css = theme.borrow().preview_gtk_css();
                     println!("{}", &preview_css);
 
                     let provider = CssProvider::new();

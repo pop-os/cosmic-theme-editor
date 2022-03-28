@@ -171,7 +171,7 @@ checksum = "b9e769b5c8c8283982a987c6e948e540254f1058d5a74b8794914d4ef5fc2a24"
 [[package]]
 name = "cosmic-theme"
 version = "0.1.0"
-source = "git+https://github.com/pop-os/cosmic-theme#b567189830d91632684da14b6135ac3121e95d57"
+source = "git+https://github.com/pop-os/cosmic-theme#dbb59a71aba88ac85249a69ad29cfa3e16775a5f"
 dependencies = [
  "anyhow",
  "dirs",
@@ -186,6 +186,7 @@ dependencies = [
  "ron",
  "serde",
  "toml",
+ "xdg",
 ]
 
 [[package]]
@@ -203,6 +204,7 @@ dependencies = [
  "palette",
  "relm4",
  "relm4-macros",
+ "serde",
  "tokio",
 ]
 
@@ -1088,6 +1090,7 @@ dependencies = [
  "num-traits",
  "palette_derive",
  "phf",
+ "serde",
 ]
 
 [[package]]
@@ -1515,9 +1518,9 @@ checksum = "8ea5119cdb4c55b55d432abb513a0429384878c15dde60cc77b1c99de1a95a6a"
 
 [[package]]
 name = "syn"
-version = "1.0.89"
+version = "1.0.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea297be220d52398dcc07ce15a209fce436d361735ac1db700cab3b6cdfb9f54"
+checksum = "704df27628939572cd88d33f171cd6f896f4eaca85252c6e0a72d8d8287ee86f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1792,3 +1795,12 @@ name = "windows_x86_64_msvc"
 version = "0.32.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "504a2476202769977a040c6364301a3f65d0cc9e3fb08600b2bda150a0488316"
+
+[[package]]
+name = "xdg"
+version = "2.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0c4583db5cbd4c4c0303df2d15af80f0539db703fa1c68802d4cbbd2dd0f88f6"
+dependencies = [
+ "dirs",
+]

@@ -3,6 +3,7 @@
 use core::fmt;
 use std::ops::{Deref, DerefMut};
 
+use cosmic_theme::Hex;
 use gtk4::{
     gdk::RGBA,
     gdk_pixbuf::{Colorspace, Pixbuf},
@@ -11,6 +12,7 @@ use gtk4::{
 };
 use hex::encode;
 use palette::{rgb::Srgba, Pixel};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 pub fn hex_from_rgba(rgba: &Srgba) -> String {
     let hex = encode::<[u8; 4]>(Srgba::into_raw(rgba.into_format()));
@@ -19,7 +21,7 @@ pub fn hex_from_rgba(rgba: &Srgba) -> String {
 use kmeans_colors::{get_kmeans_hamerly, Kmeans, Sort};
 use palette::{IntoColor, Lab, Srgb};
 
-#[derive(Copy, Clone, PartialEq, Debug, Default)]
+#[derive(Copy, Clone, PartialEq, Debug, Default, Serialize, Deserialize)]
 pub struct SRGBA(pub Srgba);
 
 impl SRGBA {
