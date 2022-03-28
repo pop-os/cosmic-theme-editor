@@ -2,10 +2,11 @@
 
 use crate::{
     components::FileButton,
-    model::ThemeDerivation,
     util::{self, SRGBA},
 };
+
 use cascade::cascade;
+use cosmic_theme::{ColorPicker, Exact, ThemeDerivation};
 use gtk4::{
     gdk::{self},
     gio::File,
@@ -457,14 +458,14 @@ impl ThemeEditor {
             .unwrap()
             .connect_color_set(glib::clone!(@weak selection => move |self_| {
                 let mut c = selection.get();
-                c.set_background(self_.rgba());
+                c.background = SRGBA::from(self_.rgba());
                 selection.set(c);
             }));
 
         imp.primary_color_button.get().unwrap().connect_color_set(
             glib::clone!(@weak selection => move |self_| {
                 let mut c = selection.get();
-                c.set_primary_container(self_.rgba());
+                c.primary_container = SRGBA::from(self_.rgba());
                 selection.set(c);
             }),
         );
@@ -472,7 +473,7 @@ impl ThemeEditor {
         imp.secondary_color_button.get().unwrap().connect_color_set(
             glib::clone!(@weak selection => move |self_| {
                 let mut c = selection.get();
-                c.set_secondary_container(self_.rgba());
+                c.secondary_container = SRGBA::from(self_.rgba());
                 selection.set(c);
             }),
         );
@@ -482,14 +483,14 @@ impl ThemeEditor {
             .unwrap()
             .connect_color_set(glib::clone!(@weak selection => move |self_| {
                 let mut c = selection.get();
-                c.set_accent_text_color(self_.rgba());
+                c.accent_text = Some(self_.rgba().into());
                 selection.set(c);
             }));
 
         imp.accent_color_button.get().unwrap().connect_color_set(
             glib::clone!(@weak selection => move |self_| {
                 let mut c = selection.get();
-                c.set_accent_color(self_.rgba());
+                c.accent = self_.rgba().into();
                 selection.set(c);
             }),
         );
@@ -499,7 +500,7 @@ impl ThemeEditor {
             .unwrap()
             .connect_color_set(glib::clone!(@weak selection => move |self_| {
                 let mut c = selection.get();
-                c.set_accent_nav_handle_text_color(self_.rgba());
+                c.accent_nav_handle_text = Some(self_.rgba().into());
                 selection.set(c);
             }));
 
@@ -508,7 +509,7 @@ impl ThemeEditor {
             .unwrap()
             .connect_color_set(glib::clone!(@weak selection => move |self_| {
                 let mut c = selection.get();
-                c.set_destructive(self_.rgba());
+                c.destructive = self_.rgba().into();
                 selection.set(c)
             }));
     }
@@ -558,7 +559,8 @@ impl ThemeEditor {
         imp.preview.get().unwrap().connect_clicked(
             glib::clone!(@weak selection, @weak theme, @weak constraints, @weak self as parent => move |self_| {
                 println!("generating new theme");
-                let ThemeDerivation {theme: new_theme, errors} = (selection.get(), constraints.get()).into();
+                let picker = Exact::new(selection.get(), constraints.get());
+                let ThemeDerivation {theme: new_theme, errors} = picker.theme_derivation();
                     dbg!(new_theme);
                     theme.set(new_theme);
                     let preview_css = theme.get().as_css();

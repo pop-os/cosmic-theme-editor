@@ -1,13 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+use crate::{components::FileButton, util::SRGBA};
+use cosmic_theme::{Selection, Theme, ThemeConstraints};
 use gtk4::{glib, subclass::prelude::*, Button, ColorButton, Entry, Switch};
 use once_cell::sync::OnceCell;
 use std::{cell::Cell, rc::Rc};
-
-use crate::{
-    components::FileButton,
-    model::{Selection, Theme, ThemeConstraints},
-};
 
 // Object holding the state
 #[derive(Default)]
@@ -25,8 +22,8 @@ pub struct ThemeEditor {
     pub accent_nav_handle_text_color_button: OnceCell<ColorButton>,
     pub destructive_color_button: OnceCell<ColorButton>,
     pub constraints: Rc<Cell<ThemeConstraints>>,
-    pub selection: Rc<Cell<Selection>>,
-    pub theme: Rc<Cell<Theme>>,
+    pub selection: Rc<Cell<Selection<SRGBA>>>,
+    pub theme: Rc<Cell<Theme<SRGBA>>>,
 }
 
 // The central trait for subclassing a GObject

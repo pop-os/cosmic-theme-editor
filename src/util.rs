@@ -27,7 +27,11 @@ impl SRGBA {
         self.0
     }
 }
-
+impl From<Srgba> for SRGBA {
+    fn from(c: Srgba) -> Self {
+        Self(c)
+    }
+}
 impl From<RGBA> for SRGBA {
     fn from(rgba: RGBA) -> Self {
         Self(Srgba::new(
@@ -50,6 +54,12 @@ impl Deref for SRGBA {
 
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl Into<Srgba> for SRGBA {
+    fn into(self) -> Srgba {
+        self.0
     }
 }
 
