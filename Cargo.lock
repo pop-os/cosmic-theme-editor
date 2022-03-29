@@ -171,7 +171,7 @@ checksum = "b9e769b5c8c8283982a987c6e948e540254f1058d5a74b8794914d4ef5fc2a24"
 [[package]]
 name = "cosmic-theme"
 version = "0.1.0"
-source = "git+https://github.com/pop-os/cosmic-theme#dbb59a71aba88ac85249a69ad29cfa3e16775a5f"
+source = "git+https://github.com/pop-os/cosmic-theme#42a81da2fb691c30df73e91e47e940fb35536708"
 dependencies = [
  "anyhow",
  "dirs",

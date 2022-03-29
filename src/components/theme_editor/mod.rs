@@ -72,7 +72,7 @@ impl ThemeEditor {
                     set_margin_bottom: 4,
                     set_margin_start: 4,
                     set_margin_end: 4,
-
+                    add_css_class: "background-component",
                     set_width_request: 160,
                 },
 
@@ -561,6 +561,7 @@ impl ThemeEditor {
 
         imp.save.get().unwrap().connect_clicked(
             glib::clone!(@weak selection, @weak theme, @weak constraints => move |save| {
+                println!("saving the theme...");
                 if theme.borrow().get_name() != "" {
                     if let Err(e) = theme.borrow().write() {
                         let window = save.root().map(|root| {
@@ -574,7 +575,8 @@ impl ThemeEditor {
                             glib::MainContext::default().spawn_local(Self::dialog(window, format!("{}", e)));
                         }
 
-                    }                }
+                    }
+                }
             }),
         );
 
