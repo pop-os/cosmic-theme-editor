@@ -2,7 +2,7 @@
 
 use super::ThemeEditor;
 use cascade::cascade;
-use gtk4::{gio, glib, prelude::*, subclass::prelude::*, Application};
+use gtk4::{gio, glib, prelude::*, subclass::prelude::*, Application, CssProvider};
 
 mod imp;
 
@@ -14,7 +14,7 @@ glib::wrapper! {
 }
 
 impl App {
-    pub fn new(app: &Application) -> Self {
+    pub fn new(app: &Application, provider: CssProvider) -> Self {
         let self_: Self = glib::Object::new(&[("application", app)])
             .expect("Failed to create Theme Editor Application");
         let imp = imp::App::from_instance(&self_);
@@ -27,9 +27,9 @@ impl App {
             ..add_css_class("background");
         };
 
-        let theme_editor = ThemeEditor::new();
+        let theme_editor = ThemeEditor::new(provider);
         self_.set_child(Some(&theme_editor));
-        imp.theme_editor.set(theme_editor);
+        imp.theme_editor.set(Some(theme_editor));
         self_
     }
 }

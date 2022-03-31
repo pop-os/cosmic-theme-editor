@@ -22,6 +22,8 @@ impl FileButton {
         let button = cascade! {
             Button::with_label("Load from Image");
             ..add_css_class("background-component");
+            ..add_css_class("padding-medium");
+            ..add_css_class("border-radius-medium");
         };
 
         let self_: Self = glib::Object::new(&[]).expect("Failed to create `FileButton`.");

@@ -2,7 +2,7 @@
 
 use crate::{components::FileButton, util::SRGBA};
 use cosmic_theme::{Selection, Theme, ThemeConstraints};
-use gtk4::{glib, subclass::prelude::*, Button, ColorButton, Entry, Switch};
+use gtk4::{glib, subclass::prelude::*, Button, ColorButton, CssProvider, Entry, Switch};
 use once_cell::sync::OnceCell;
 use std::{
     cell::{Cell, RefCell},
@@ -27,6 +27,7 @@ pub struct ThemeEditor {
     pub constraints: Rc<Cell<ThemeConstraints>>,
     pub selection: Rc<Cell<Selection<SRGBA>>>,
     pub theme: Rc<RefCell<Theme<SRGBA>>>,
+    pub css_provider: Rc<OnceCell<CssProvider>>,
 }
 
 // The central trait for subclassing a GObject

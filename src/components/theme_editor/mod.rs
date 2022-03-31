@@ -8,7 +8,7 @@ use crate::{
 use cascade::cascade;
 use cosmic_theme::{ColorPicker, Exact, GtkOutput, ThemeDerivation};
 use gtk4::{
-    gdk::{self},
+    gdk,
     gio::File,
     glib::{self, closure_local},
     prelude::*,
@@ -26,14 +26,8 @@ glib::wrapper! {
     @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Orientable;
 }
 
-impl Default for ThemeEditor {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl ThemeEditor {
-    pub fn new() -> Self {
+    pub fn new(provider: CssProvider) -> Self {
         let self_: Self = glib::Object::new(&[]).expect("Failed to create Theme Editor Widget");
 
         let imp = imp::ThemeEditor::from_instance(&self_);
@@ -73,6 +67,8 @@ impl ThemeEditor {
                     set_margin_start: 4,
                     set_margin_end: 4,
                     add_css_class: "background-component",
+                    add_css_class: "padding-medium",
+                    add_css_class: "border-radius-medium",
                     set_width_request: 160,
                 },
 
@@ -91,6 +87,7 @@ impl ThemeEditor {
                         set_margin_start: 4,
                         set_margin_end: 4,
                         add_css_class: "background-component",
+
                     },
 
                     append = &Label {
@@ -120,6 +117,8 @@ impl ThemeEditor {
                         set_margin_start: 4,
                         set_margin_end: 4,
                         add_css_class: "background-component",
+                        add_css_class: "padding-medium",
+                        add_css_class: "border-radius-medium",
 
                         set_child = Some(&Label) {
                             set_text: "Save",
@@ -132,6 +131,8 @@ impl ThemeEditor {
                         set_margin_start: 4,
                         set_margin_end: 4,
                         add_css_class: "background-component",
+                        add_css_class: "padding-medium",
+                        add_css_class: "border-radius-medium",
 
                         set_child = Some(&Label) {
                             set_text: "Preview",
@@ -150,7 +151,7 @@ impl ThemeEditor {
                     set_margin_start: 8,
                     set_margin_end: 8,
                     add_css_class: "background-divider",
-                },
+               },
 
                 append = &Box {
                     set_orientation: Orientation::Horizontal,
@@ -166,6 +167,8 @@ impl ThemeEditor {
                         set_margin_start: 4,
                         set_margin_end: 4,
                         add_css_class: "destructive-action",
+                        add_css_class: "padding-medium",
+                        add_css_class: "border-radius-medium",
 
                         set_child = Some(&Label) {
                             set_text: "Destructive",
@@ -182,6 +185,8 @@ impl ThemeEditor {
                         set_margin_start: 4,
                         set_margin_end: 4,
                         add_css_class: "suggested-action",
+                        add_css_class: "padding-medium",
+                        add_css_class: "border-radius-medium",
 
                         set_child = Some(&Label) {
                             set_text: "Suggested",
@@ -198,6 +203,8 @@ impl ThemeEditor {
                     set_hexpand: true,
                     set_height_request: 100,
                     add_css_class: "background",
+                    add_css_class: "padding-medium",
+                    add_css_class: "border-radius-medium",
                     set_margin_top: 8,
                     set_margin_bottom: 8,
                     set_margin_start: 8,
@@ -216,6 +223,8 @@ impl ThemeEditor {
                         set_orientation: Orientation::Vertical,
                         set_hexpand: true,
                         set_height_request: 50,
+                        add_css_class: "padding-medium",
+                        add_css_class: "border-radius-medium",
                         add_css_class: "background-component",
                         set_margin_top: 8,
                         set_margin_bottom: 8,
@@ -246,7 +255,9 @@ impl ThemeEditor {
                         set_hexpand: true,
                         set_height_request: 100,
                         add_css_class: "primary-container",
-                        set_margin_top: 8,
+                        add_css_class: "padding-medium",
+                        add_css_class: "border-radius-medium",
+                       set_margin_top: 8,
                         set_margin_bottom: 8,
                         set_margin_start: 8,
                         set_margin_end: 8,
@@ -265,7 +276,9 @@ impl ThemeEditor {
                             set_hexpand: true,
                             set_height_request: 50,
                             add_css_class: "primary-container-component",
-                            set_margin_top: 8,
+                            add_css_class: "padding-medium",
+                            add_css_class: "border-radius-medium",
+                           set_margin_top: 8,
                             set_margin_bottom: 8,
                             set_margin_start: 8,
                             set_margin_end: 8,
@@ -294,7 +307,9 @@ impl ThemeEditor {
                             set_hexpand: true,
                             set_height_request: 100,
                             add_css_class: "secondary-container",
-                            set_margin_top: 8,
+                            add_css_class: "padding-medium",
+                            add_css_class: "border-radius-medium",
+                           set_margin_top: 8,
                             set_margin_bottom: 8,
                             set_margin_start: 8,
                             set_margin_end: 8,
@@ -313,7 +328,9 @@ impl ThemeEditor {
                                 set_hexpand: true,
                                 set_height_request: 50,
                                 add_css_class: "secondary-container-component",
-                                set_margin_top: 8,
+                                add_css_class: "padding-medium",
+                                add_css_class: "border-radius-medium",
+                               set_margin_top: 8,
                                 set_margin_bottom: 8,
                                 set_margin_start: 8,
                                 set_margin_end: 8,
@@ -349,6 +366,8 @@ impl ThemeEditor {
             .build();
 
         self_.append(&scroll_window);
+
+        imp.css_provider.set(provider).unwrap();
 
         // set widget state
         imp.name.set(name).unwrap();
@@ -558,6 +577,7 @@ impl ThemeEditor {
         let selection = &imp.selection;
         let theme = &imp.theme;
         let constraints = &imp.constraints;
+        let css_provider = &imp.css_provider;
 
         imp.save.get().unwrap().connect_clicked(
             glib::clone!(@weak selection, @weak theme, @weak constraints => move |save| {
@@ -581,7 +601,7 @@ impl ThemeEditor {
         );
 
         imp.preview.get().unwrap().connect_clicked(
-            glib::clone!(@weak selection, @weak theme, @weak constraints, @weak self as parent => move |self_| {
+            glib::clone!(@weak selection, @weak theme, @weak constraints, @weak css_provider, @weak self as parent => move |self_| {
                 println!("generating new theme");
                 let picker = Exact::new(selection.get(), constraints.get());
                 let ThemeDerivation {theme: new_theme, errors} = picker.theme_derivation();
@@ -590,14 +610,7 @@ impl ThemeEditor {
                     let preview_css = theme.borrow().preview_gtk_css();
                     println!("{}", &preview_css);
 
-                    let provider = CssProvider::new();
-                    provider.load_from_data(preview_css.as_bytes());
-                    StyleContext::add_provider_for_display(
-                        &gdk::Display::default().expect("Error initializing GTK CSS provider."),
-                        &provider,
-                        gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
-                    );
-
+                css_provider.get().unwrap().load_from_data(preview_css.as_bytes());
                 if errors.len() > 0 {
                     eprintln!("Errors while creating new theme...");
                     let window = self_.root().map(|root| {

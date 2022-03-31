@@ -8,7 +8,7 @@ use crate::components::ThemeEditor;
 // Object holding the state
 #[derive(Default)]
 pub struct App {
-    pub theme_editor: Cell<ThemeEditor>,
+    pub theme_editor: Cell<Option<ThemeEditor>>,
 }
 
 // The central trait for subclassing a GObject

@@ -8,8 +8,7 @@ edition = "2021"
 [dependencies]
 palette = { version = "0.6", features = ["serializing"] }
 anyhow = "1.0"
-gtk4 = { git = "https://github.com/gtk-rs/gtk4-rs"}
-relm4 = { git = "https://github.com/AaronErhardt/Relm4", branch = "new-approach" }
+gtk4 = { version = "0.4.7" }
 relm4-macros = { git = "https://github.com/AaronErhardt/Relm4", branch = "new-approach" }
 once_cell = "1.9.0"
 tokio = { version = "1.17.0", features = ["full"] }
