@@ -19,3 +19,6 @@ cosmic-theme = { git = "https://github.com/pop-os/cosmic-theme" }
 #cosmic-theme = { path = "../cosmic-theme" }
 kmeans_colors = { git = "https://github.com/okaneco/kmeans-colors", features = ["palette_color"], default-features = false }
 serde = "1.0.136"
+log = "0.4"
+pretty_env_logger = "0.4"
+gettext-rs = { version = "0.7", features = ["gettext-system"] }

@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-use components::App;
-use cosmic_theme::Config;
 use gtk4::{gdk::Display, glib, prelude::*, Application, CssProvider, StyleContext};
 
 mod components;
@@ -36,14 +34,12 @@ fn main() {
         .application_id(APP_STRING)
         .build();
 
-    let config = Config::new("bubbleine-light".into(), "bubbleine-dark".into());
-    config.save().unwrap();
     app.connect_startup(|app| {
         setup_shortcuts(app);
     });
     app.connect_activate(move |app| {
         let provider = load_css();
-        let theme_app = App::new(app, provider);
+        let theme_app = components::App::new(app, provider);
         theme_app.show();
     });
     app.run();

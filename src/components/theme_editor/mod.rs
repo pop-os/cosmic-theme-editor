@@ -422,7 +422,7 @@ impl ThemeEditor {
             "image-selected",
             false,
             closure_local!(@weak-allow-none imp.selection as selection, @weak-allow-none self as self_ => move |_file_button: FileButton, f: File| {
-                if let Some(Ok(s)) = util::palette_from_image(f).map(|f| f.try_into()) {
+                if let Some(Ok(s)) = cosmic_theme::palette_from_image(f.path().unwrap()).map(|f| f.try_into()) {
                     selection.unwrap().set(s);
                     self_.unwrap().update_color_buttons();
                 }
