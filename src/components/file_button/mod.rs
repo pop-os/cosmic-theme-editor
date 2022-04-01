@@ -84,6 +84,9 @@ impl FileButton {
         imp.file_chooser.borrow().connect_response(
             glib::clone!(@weak self as self_ => move |file_chooser, response| {
                 if response != gtk4::ResponseType::Accept {return};
+                dbg!(file_chooser.file());
+                dbg!(file_chooser.file().unwrap().path());
+                dbg!(gtk4::gdk_pixbuf::Pixbuf::from_file(file_chooser.file().unwrap().path().unwrap()));
                 if let Some(f) = file_chooser.file() {
                     self_.emit_by_name::<()>("image-selected", &[&f]);
                 }

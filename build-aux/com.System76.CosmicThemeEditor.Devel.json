@@ -1,0 +1,43 @@
+{
+    "app-id": "com.System76.CosmicThemeEditor.Devel",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "41",
+    "sdk": "org.gnome.Sdk",
+    "sdk-extensions": ["org.freedesktop.Sdk.Extension.rust-stable"],
+    "command": "cosmic-theme-editor",
+    "finish-args" : [
+	"--filesystem=xdg-config/cosmic-theme:ro",
+	"--filesystem=xdg-data/cosmic-theme:create",
+        "--talk-name=org.a11y.*",
+        "--socket=fallback-x11",
+        "--socket=wayland",
+        "--device=dri",
+        "--env=RUST_LOG=cosmic-theme-editor=debug",
+        "--env=G_MESSAGES_DEBUG=none",
+        "--env=RUST_BACKTRACE=1"
+    ],
+    "build-options" : {
+        "append-path" : "/usr/lib/sdk/rust-stable/bin",
+        "build-args" : [
+            "--share=network"
+        ],
+        "test-args": [
+            "--socket=x11",
+            "--share=network"
+        ]
+    },
+    "modules": [
+        {
+            "name": "cosmic-theme-editor",
+            "buildsystem": "meson",
+            "run-tests": true,
+            "config-opts": ["-Dprofile=development"],
+            "sources": [
+                {
+                    "type": "dir",
+                    "path": "../"
+                }
+            ]
+        }
+    ]
+}

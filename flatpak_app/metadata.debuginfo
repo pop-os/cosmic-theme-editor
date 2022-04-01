@@ -1,0 +1,5 @@
+[Runtime]
+name=com.System76.CosmicThemeEditor.Devel.Debug
+
+[ExtensionOf]
+ref=app/com.System76.CosmicThemeEditor.Devel/x86_64/master

@@ -1,9 +1,8 @@
 [package]
 name = "cosmic-theme-editor"
 version = "0.1.0"
+authors = ["Ashley Wulber <ashley@system76.com>"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 palette = { version = "0.6", features = ["serializing"] }

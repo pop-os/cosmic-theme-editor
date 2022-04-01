@@ -1,0 +1,26 @@
+[Application]
+name=com.System76.CosmicThemeEditor.Devel
+runtime=org.gnome.Platform/x86_64/41
+sdk=org.gnome.Sdk/x86_64/41
+command=cosmic-theme-editor
+
+[Context]
+sockets=x11;wayland;fallback-x11;
+devices=dri;
+filesystems=xdg-config/cosmic-theme:ro;xdg-data/cosmic-theme:create;
+
+[Session Bus Policy]
+org.a11y.*=talk
+
+[Environment]
+G_MESSAGES_DEBUG=none
+RUST_LOG=cosmic-theme-editor=debug
+RUST_BACKTRACE=1
+
+[Extension com.System76.CosmicThemeEditor.Devel.Debug]
+directory=lib/debug
+autodelete=true
+no-autodownload=true
+
+[Build]
+built-extensions=com.System76.CosmicThemeEditor.Devel.Debug;
