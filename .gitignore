@@ -8,4 +8,9 @@ src/config.rs
 *.ui.in~
 *.ui~
 .flatpak/
+.flatpak-builder
+.github
+.vscode
+.editorconfig
+.gitlab-ci.yml
 vendor
