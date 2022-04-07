@@ -3,6 +3,7 @@
 mod imp;
 
 use cascade::cascade;
+use gettextrs::gettext;
 use gtk4::{glib, prelude::*, subclass::prelude::*, Button, FileChooserNative, Window};
 
 glib::wrapper! {
@@ -20,7 +21,7 @@ impl Default for FileButton {
 impl FileButton {
     pub fn new() -> Self {
         let button = cascade! {
-            Button::with_label("Load from Image");
+            Button::with_label(&gettext("Load from Image"));
             ..add_css_class("background-component");
             ..add_css_class("padding-medium");
             ..add_css_class("border-radius-medium");
@@ -51,7 +52,7 @@ impl FileButton {
             .unwrap_or_default();
 
         let file_chooser = FileChooserNative::new(
-            Some("Select Image"),
+            Some(&gettext("Select Image")),
             window.as_ref(),
             gtk4::FileChooserAction::Open,
             None,

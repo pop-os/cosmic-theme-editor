@@ -1,0 +1,99 @@
+# British English translation for Cosmic Theme Editor.
+# Copyright (C) 2022 System76
+# This file is distributed under the same license as the Cosmic App Library package.
+# Ashley Wulber <ashley@System76.com>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cosmic theme editor flatpak\n"
+"Report-Msgid-Bugs-To: https://github.com/pop-os/cosmic-theme-editor/issues\n"
+"POT-Creation-Date: 2022-04-06\n"
+"PO-Revision-Date: 2022-04-06\n"
+"Last-Translator: Ashley Wulber <ashley@System76.com>\n"
+"Language-Team: English <ashley@System76.com>\n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 3.32.1\n"
+
+#: src/components/theme_editor/mod.rs:94
+msgid "Lighten Elevated Surfaces"
+msgstr "Lighten Elevated Surfaces"
+
+#: src/components/theme_editor/mod.rs:124
+msgid "Save"
+msgstr "Save"
+
+#: src/components/theme_editor/mod.rs:138
+msgid "Preview"
+msgstr "Preview"
+
+#: src/components/theme_editor/mod.rs: 174
+msgid "Destructive"
+msgstr "Destructive"
+
+#: src/components/theme_editor/mod.rs:192
+msgid "Suggested"
+msgstr "Suggested"
+
+#: src/components/theme_editor/mod.rs:219
+msgid "Background"
+msgstr "Background"
+
+#: src/components/theme_editor/mod.rs:240
+msgid "Background Component"
+msgstr "Background Component"
+
+#: src/components/theme_editor/mod.rs:271
+msgid "Primary Container"
+msgstr "Primary Container"
+
+#: src/components/theme_editor/mod.rs:292
+msgid "Primary Container Component"
+msgstr "Primary Container Component"
+
+#: src/components/theme_editor/mod.rs:323
+msgid "Secondary Container"
+msgstr "Secondary Container"
+
+#: src/components/theme_editor/mod.rs:344
+msgid "Secondary Container Component"
+msgstr "Secondary Container Component"
+
+#: src/components/theme_editor/mod.rs:41
+msgid "Background Color"
+msgstr "Background Color"
+
+#: src/components/theme_editor/mod.rs:43
+msgid "Primary Container Color"
+msgstr "Primary Container Color"
+
+#: src/components/theme_editor/mod.rs:45
+msgid "Secondary Container Color"
+msgstr "Secondary Container Color"
+
+#: src/components/theme_editor/mod.rs:47
+msgid "Accent Color"
+msgstr "Accent Color"
+
+#: src/components/theme_editor/mod.rs:49
+msgid "Accent Text Color"
+msgstr "Accent Text Color"
+
+#: src/components/theme_editor/mod.rs:51
+msgid "Accent Nav Text Color"
+msgstr "Accent Nav Text Color"
+
+#: src/components/theme_editor/mod.rs:53
+msgid "Destructive Color"
+msgstr "Destructive Color"
+
+#: src/components/file_button/mod.rs::24
+msgid "Load from Image"
+msgstr "Load from Image"
+
+#: src/components/file_button/mod.rs:55
+msgid "Select Image"
+msgstr "Select Image"

@@ -1,20 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-use crate::{
-    components::FileButton,
-    util::{self, SRGBA},
-};
+use crate::{components::FileButton, util::SRGBA};
 
 use cascade::cascade;
 use cosmic_theme::{ColorPicker, Exact, GtkOutput, ThemeDerivation};
+use gettextrs::gettext;
 use gtk4::{
-    gdk,
     gio::File,
     glib::{self, closure_local},
     prelude::*,
     subclass::prelude::*,
     Box, Button, ColorButton, CssProvider, Entry, Label, MessageDialog, Orientation,
-    ScrolledWindow, Separator, StyleContext, Switch, Window,
+    ScrolledWindow, Separator, Switch, Window,
 };
 use relm4_macros::view;
 use std::fmt::Display;
@@ -38,18 +35,19 @@ impl ThemeEditor {
         };
 
         let (background_color_box, background_color_button) =
-            Self::get_color_button("Background Color");
+            Self::get_color_button(&gettext("Background Color"));
         let (primary_color_box, primary_color_button) =
-            Self::get_color_button("Primary Container Color");
+            Self::get_color_button(&gettext("Primary Container Color"));
         let (secondary_color_box, secondary_color_button) =
-            Self::get_color_button("Secondary Container Color");
-        let (accent_color_box, accent_color_button) = Self::get_color_button("Accent Color");
+            Self::get_color_button(&gettext("Secondary Container Color"));
+        let (accent_color_box, accent_color_button) =
+            Self::get_color_button(&gettext("Accent Color"));
         let (accent_text_color_box, accent_text_color_button) =
-            Self::get_color_button("Accent Text Color");
+            Self::get_color_button(&gettext("Accent Text Color"));
         let (accent_nav_handle_color_box, accent_nav_handle_color_button) =
-            Self::get_color_button("Accent Nav Text Color");
+            Self::get_color_button(&gettext("Accent Nav Text Color"));
         let (destructive_color_box, destructive_color_button) =
-            Self::get_color_button("Destructive Color");
+            Self::get_color_button(&gettext("Destructive Color"));
 
         view! {
             inner = Box {
@@ -91,7 +89,7 @@ impl ThemeEditor {
                     },
 
                     append = &Label {
-                        set_text: "Lighten Elevated Surfaces",
+                        set_text: &gettext("Lighten Elevated Surfaces"),
                     }
                 },
 
@@ -121,7 +119,7 @@ impl ThemeEditor {
                         add_css_class: "border-radius-medium",
 
                         set_child = Some(&Label) {
-                            set_text: "Save",
+                            set_text: &gettext("Save"),
                         }
                     },
 
@@ -135,7 +133,7 @@ impl ThemeEditor {
                         add_css_class: "border-radius-medium",
 
                         set_child = Some(&Label) {
-                            set_text: "Preview",
+                            set_text: &gettext("Preview"),
                         }
                     },
 
@@ -171,7 +169,7 @@ impl ThemeEditor {
                         add_css_class: "border-radius-medium",
 
                         set_child = Some(&Label) {
-                            set_text: "Destructive",
+                            set_text: &gettext("Destructive"),
                             set_margin_top: 4,
                             set_margin_bottom: 4,
                             set_margin_start: 4,
@@ -189,7 +187,7 @@ impl ThemeEditor {
                         add_css_class: "border-radius-medium",
 
                         set_child = Some(&Label) {
-                            set_text: "Suggested",
+                            set_text: &gettext("Suggested"),
                             set_margin_top: 4,
                             set_margin_bottom: 4,
                             set_margin_start: 4,
@@ -216,7 +214,7 @@ impl ThemeEditor {
                         set_margin_bottom: 8,
                         set_margin_start: 8,
                         set_margin_end: 8,
-                        set_text: "Background"
+                        set_text: &gettext("Background")
                     },
 
                     append = &Box {
@@ -237,7 +235,7 @@ impl ThemeEditor {
                             set_margin_bottom: 8,
                             set_margin_start: 8,
                             set_margin_end: 8,
-                            set_text: "Background Component"
+                            set_text: &gettext("Background Component")
                         },
                     },
 
@@ -268,7 +266,7 @@ impl ThemeEditor {
                             set_margin_bottom: 8,
                             set_margin_start: 8,
                             set_margin_end: 8,
-                            set_text: "Primary Container"
+                            set_text: &gettext("Primary Container")
                         },
 
                         append = &Box {
@@ -289,7 +287,7 @@ impl ThemeEditor {
                                 set_margin_bottom: 8,
                                 set_margin_start: 8,
                                 set_margin_end: 8,
-                                set_text: "Primary Container Component"
+                                set_text: &gettext("Primary Container Component")
                             },
                         },
 
@@ -320,7 +318,7 @@ impl ThemeEditor {
                                 set_margin_bottom: 8,
                                 set_margin_start: 8,
                                 set_margin_end: 8,
-                                set_text: "Secondary Container"
+                                set_text: &gettext("Secondary Container")
                             },
 
                             append = &Box {
@@ -341,7 +339,7 @@ impl ThemeEditor {
                                     set_margin_bottom: 8,
                                     set_margin_start: 8,
                                     set_margin_end: 8,
-                                    set_text: "Secondary Container Component"
+                                    set_text: &gettext("Secondary Container Component")
                                 },
                             },
 
