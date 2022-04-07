@@ -3,7 +3,7 @@
 use crate::{components::FileButton, util::SRGBA};
 
 use cascade::cascade;
-use cosmic_theme::{ColorPicker, Exact, GtkOutput, ThemeDerivation};
+use cosmic_theme::{ColorPicker, Exact, Gtk4Output, Derivation};
 use gettextrs::gettext;
 use gtk4::{
     gio::File,
@@ -581,7 +581,7 @@ impl ThemeEditor {
         imp.save.get().unwrap().connect_clicked(
             glib::clone!(@weak selection, @weak theme, @weak constraints => move |save| {
                 println!("saving the theme...");
-                if theme.borrow().get_name() != "" {
+                if theme.borrow().name != "" {
                     if let Err(e) = theme.borrow().write() {
                         let window = save.root().map(|root| {
                             if let Ok(w) = root.downcast::<Window>() {
@@ -603,10 +603,10 @@ impl ThemeEditor {
             glib::clone!(@weak selection, @weak theme, @weak constraints, @weak css_provider, @weak self as parent => move |self_| {
                 println!("generating new theme");
                 let picker = Exact::new(selection.get(), constraints.get());
-                let ThemeDerivation {theme: new_theme, errors} = picker.theme_derivation();
+                let Derivation {derived: new_theme, errors} = picker.theme_derivation();
                     dbg!(&new_theme);
                     theme.replace(new_theme);
-                    let preview_css = theme.borrow().preview_gtk_css();
+                    let preview_css = theme.borrow().as_css();
                     println!("{}", &preview_css);
 
                 css_provider.get().unwrap().load_from_data(preview_css.as_bytes());

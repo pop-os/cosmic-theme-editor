@@ -118,7 +118,7 @@ impl ThemeEditorApplication {
         );
         let provider_clone = provider.clone();
         glib::MainContext::default().spawn_local(async move {
-            if let Err(e) = cosmic_theme::load_cosmic_gtk_theme(provider_clone).await {
+            if let Err(e) = cosmic_theme::load_cosmic_gtk4_theme(provider_clone).await {
                 eprintln!("{}", e);
             }
         });
