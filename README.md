@@ -3,7 +3,8 @@
 A boilerplate template to get started with GTK, Rust, Meson, Flatpak made for GNOME. It can be adapted for other desktop environments like elementary.
 
 <div align="center">
-![Main window](data/resources/screenshots/screenshot1.png "Main window")
+
+![Main window](./data/resources/screenshots/screenshot1.png "Main Window")
 </div>
 
 ## What does it contains?
