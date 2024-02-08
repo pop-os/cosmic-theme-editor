@@ -1,0 +1,99 @@
+# British English translation for Cosmic Theme Editor.
+# Copyright (C) 2022 System76
+# This file is distributed under the same license as the Cosmic App Library package.
+# Luna Jernberg <droidbittin@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cosmic theme editor flatpak\n"
+"Report-Msgid-Bugs-To: https://github.com/pop-os/cosmic-theme-editor/issues\n"
+"POT-Creation-Date: 2022-04-06\n"
+"PO-Revision-Date: 2024-02-08 06:00+0100\n"
+"Last-Translator: Luna Jernberg <droidbittin@gmail.com>\n"
+"Language-Team: Swedish <droidbittin@gmail.com>\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: src/components/theme_editor/mod.rs:94
+msgid "Lighten Elevated Surfaces"
+msgstr "Ljusna upp förhöjda ytor"
+
+#: src/components/theme_editor/mod.rs:124
+msgid "Save"
+msgstr "Spara"
+
+#: src/components/theme_editor/mod.rs:138
+msgid "Preview"
+msgstr "Förhandsgranska"
+
+#: src/components/theme_editor/mod.rs:174
+msgid "Destructive"
+msgstr "Destruktiv"
+
+#: src/components/theme_editor/mod.rs:192
+msgid "Suggested"
+msgstr "Föreslogs"
+
+#: src/components/theme_editor/mod.rs:219
+msgid "Background"
+msgstr "Bakgrund"
+
+#: src/components/theme_editor/mod.rs:240
+msgid "Background Component"
+msgstr "Bakgrund komponent"
+
+#: src/components/theme_editor/mod.rs:271
+msgid "Primary Container"
+msgstr "Primär behållare"
+
+#: src/components/theme_editor/mod.rs:292
+msgid "Primary Container Component"
+msgstr "Primär behållare komponent"
+
+#: src/components/theme_editor/mod.rs:323
+msgid "Secondary Container"
+msgstr "Sekundär behållare"
+
+#: src/components/theme_editor/mod.rs:344
+msgid "Secondary Container Component"
+msgstr "Sekundär behållare komponent"
+
+#: src/components/theme_editor/mod.rs:41
+msgid "Background Color"
+msgstr "Bakgrundsfärg"
+
+#: src/components/theme_editor/mod.rs:43
+msgid "Primary Container Color"
+msgstr "Primär behållarfärg"
+
+#: src/components/theme_editor/mod.rs:45
+msgid "Secondary Container Color"
+msgstr "Sekundär behållarfärg"
+
+#: src/components/theme_editor/mod.rs:47
+msgid "Accent Color"
+msgstr "Accentfärg"
+
+#: src/components/theme_editor/mod.rs:49
+msgid "Accent Text Color"
+msgstr "Accent textfärg"
+
+#: src/components/theme_editor/mod.rs:51
+msgid "Accent Nav Text Color"
+msgstr "Accent Nav textfärg"
+
+#: src/components/theme_editor/mod.rs:53
+msgid "Destructive Color"
+msgstr "Destruktiv färg"
+
+#: src/components/file_button/mod.rs::24
+msgid "Load from Image"
+msgstr "Ladda från bild"
+
+#: src/components/file_button/mod.rs:55
+msgid "Select Image"
+msgstr "Välj bild"
